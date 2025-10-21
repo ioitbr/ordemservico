@@ -383,20 +383,6 @@
             font-weight: bold;
         }
 
-        @media print {
-            .nav-menu, .btn {
-                display: none !important;
-            }
-            
-            .content-area {
-                padding: 0;
-            }
-            
-            .os-container {
-                max-width: none;
-            }
-        }
-
         @media (max-width: 768px) {
             .content-area {
                 padding: 15px;
@@ -413,6 +399,391 @@
             .client-item, .os-item {
                 flex-direction: column;
                 text-align: center;
+            }
+        }
+
+        /* ===== CSS OTIMIZADO PARA IMPRESSÃO - 1 FOLHA A4 ===== */
+        @page {
+            size: A4 portrait;
+            margin: 0.5cm 1cm;
+        }
+
+        @media print {
+            /* ===== ELEMENTOS A SEREM ESCONDIDOS ===== */
+            .nav-menu,
+            .btn,
+            .nav-btn-logout,
+            .search-bar,
+            .cliente-select button,
+            .loading,
+            .os-actions {
+                display: none !important;
+            }
+            
+            /* ===== CONFIGURAÇÕES GERAIS DA IMPRESSÃO ===== */
+            body {
+                font-family: 'Arial', sans-serif !important;
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .content-area {
+                padding: 0 !important;
+                min-height: auto !important;
+            }
+
+            .os-container {
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* ===== HEADER DA OS ===== */
+            .os-header {
+                background: #f8f9fa !important;
+                border: 1px solid #ddd !important;
+                border-radius: 0 !important;
+                padding: 8px 12px !important;
+                margin: 0 0 4px 0 !important;
+                text-align: center !important;
+                page-break-inside: avoid;
+            }
+
+            .os-number {
+                font-size: 18px !important;
+                font-weight: bold !important;
+                color: #2c3e50 !important;
+                margin: 0 !important;
+                line-height: 1.1 !important;
+            }
+
+            .os-date {
+                font-size: 11px !important;
+                color: #666 !important;
+                margin: 0 !important;
+            }
+
+            /* ===== SEÇÕES ===== */
+            .section {
+                background: white !important;
+                border: 1px solid #ddd !important;
+                border-radius: 0 !important;
+                padding: 8px 12px !important;
+                margin: 2px 0 !important;
+                page-break-inside: avoid;
+            }
+
+            .section h2 {
+                color: #2c3e50 !important;
+                margin: 4px 0 8px 0 !important;
+                font-size: 12px !important;
+                font-weight: bold !important;
+                border-bottom: 1px solid #ddd !important;
+                padding-bottom: 2px !important;
+                line-height: 1.1 !important;
+            }
+
+            /* ===== FORMULÁRIOS ===== */
+            .form-group {
+                margin-bottom: 6px !important;
+            }
+
+            .form-group label {
+                font-size: 10px !important;
+                font-weight: bold !important;
+                color: #333 !important;
+                margin-bottom: 2px !important;
+                display: block !important;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                width: 100% !important;
+                padding: 4px 6px !important;
+                border: 1px solid #ccc !important;
+                border-radius: 3px !important;
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+                background: white !important;
+                box-sizing: border-box !important;
+            }
+
+            .form-group textarea {
+                height: 40px !important;
+                resize: none !important;
+            }
+
+            /* ===== DADOS DO CLIENTE ===== */
+            .cliente-select {
+                margin-bottom: 6px !important;
+            }
+
+            .cliente-select input {
+                width: 100% !important;
+                margin-bottom: 4px !important;
+            }
+
+            .client-details {
+                background: #f8f9fa !important;
+                padding: 6px !important;
+                border-radius: 3px !important;
+                margin-top: 4px !important;
+                border: 1px solid #e9ecef !important;
+            }
+
+            .client-details p {
+                margin: 2px 0 !important;
+                font-size: 9px !important;
+                line-height: 1.1 !important;
+            }
+
+            /* ===== TABELAS COMPACTAS ===== */
+            .table-container {
+                overflow: visible !important;
+                margin: 4px 0 !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 9px !important;
+                margin: 0 !important;
+            }
+
+            th, td {
+                border: 1px solid #ddd !important;
+                padding: 3px 4px !important;
+                text-align: left !important;
+                vertical-align: top !important;
+                line-height: 1.1 !important;
+            }
+
+            th {
+                background: #f8f9fa !important;
+                color: #333 !important;
+                font-weight: bold !important;
+                font-size: 8px !important;
+                padding: 4px 2px !important;
+                text-align: center !important;
+            }
+
+            td {
+                font-size: 9px !important;
+            }
+
+            /* ===== LARGURAS ESPECÍFICAS DAS COLUNAS ===== */
+            th:nth-child(1), td:nth-child(1) {
+                width: 8% !important;
+                text-align: center !important;
+            }
+
+            th:nth-child(2), td:nth-child(2) {
+                width: 45% !important;
+            }
+
+            th:nth-child(3), td:nth-child(3) {
+                width: 8% !important;
+                text-align: center !important;
+            }
+
+            th:nth-child(4), td:nth-child(4) {
+                width: 12% !important;
+                text-align: right !important;
+            }
+
+            th:nth-child(5), td:nth-child(5) {
+                width: 12% !important;
+                text-align: right !important;
+                font-weight: bold !important;
+            }
+
+            th:nth-child(6), td:nth-child(6) {
+                width: 5% !important;
+                text-align: center !important;
+            }
+
+            /* ===== INPUTS DAS TABELAS ===== */
+            .table-input {
+                width: 100% !important;
+                border: none !important;
+                background: transparent !important;
+                padding: 1px !important;
+                font-size: 9px !important;
+                line-height: 1 !important;
+                margin: 0 !important;
+            }
+
+            .table-input:focus {
+                outline: none !important;
+                background: #fff !important;
+                border: 1px solid #667eea !important;
+            }
+
+            /* ===== TOTAIS ===== */
+            .total-section {
+                background: #e8f5e8 !important;
+                padding: 8px 12px !important;
+                border-radius: 0 !important;
+                margin: 8px 0 !important;
+                text-align: right !important;
+                border: 1px solid #27ae60 !important;
+            }
+
+            .total-line {
+                font-size: 11px !important;
+                margin: 3px 0 !important;
+                font-weight: bold !important;
+                line-height: 1.1 !important;
+            }
+
+            .total-final {
+                font-size: 14px !important;
+                color: #27ae60 !important;
+                border-top: 1px solid #27ae60 !important;
+                padding-top: 4px !important;
+                margin-top: 6px !important;
+                font-weight: bold !important;
+                line-height: 1.2 !important;
+            }
+
+            /* ===== PAGAMENTO ===== */
+            .payment-section {
+                display: block !important;
+                grid-template-columns: none !important;
+                gap: 0 !important;
+                margin-top: 8px !important;
+            }
+
+            .payment-section .form-group {
+                display: inline-block !important;
+                width: 24% !important;
+                vertical-align: top !important;
+                margin: 0 0 4px 0 !important;
+            }
+
+            .payment-section .form-group:nth-child(4) {
+                width: 48% !important;
+            }
+
+            .payment-section input,
+            .payment-section select {
+                padding: 3px 5px !important;
+                font-size: 10px !important;
+            }
+
+            /* ===== OBSERVAÇÕES ===== */
+            #observacoes {
+                height: 50px !important;
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+            }
+
+            /* ===== ASSINATURAS ===== */
+            .signature-section {
+                display: flex !important;
+                justify-content: space-between !important;
+                margin-top: 20px !important;
+                padding-top: 10px !important;
+                border-top: 1px solid #333 !important;
+                page-break-inside: avoid;
+            }
+
+            .signature-box {
+                flex: 1 !important;
+                text-align: center !important;
+                margin: 0 10px !important;
+            }
+
+            .signature-box p {
+                font-size: 10px !important;
+                margin: 2px 0 !important;
+                line-height: 1.1 !important;
+            }
+
+            .signature-line {
+                border-bottom: 1px solid #333 !important;
+                height: 25px !important;
+                margin: 5px 0 !important;
+            }
+
+            /* ===== LISTAS DE CLIENTES E OS ===== */
+            .client-item,
+            .os-item {
+                border: 1px solid #ddd !important;
+                padding: 8px !important;
+                margin-bottom: 8px !important;
+                page-break-inside: avoid;
+            }
+
+            .client-info h3,
+            .os-details h3 {
+                font-size: 12px !important;
+                margin-bottom: 4px !important;
+            }
+
+            .client-info p,
+            .os-meta {
+                font-size: 9px !important;
+                margin: 2px 0 !important;
+            }
+
+            /* ===== EVITAR QUEBRAS INDESEJADAS ===== */
+            .section,
+            .os-header,
+            .signature-section,
+            table {
+                page-break-inside: avoid !important;
+            }
+
+            .table-container {
+                page-break-inside: auto !important;
+            }
+
+            tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
+
+            thead {
+                display: table-header-group !important;
+            }
+
+            tfoot {
+                display: table-footer-group !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            @media print and (max-width: 600px) {
+                .payment-section .form-group {
+                    width: 100% !important;
+                    display: block !important;
+                    margin-bottom: 4px !important;
+                }
+
+                .signature-section {
+                    flex-direction: column !important;
+                }
+
+                .signature-box {
+                    margin: 5px 0 !important;
+                }
             }
         }
     </style>
@@ -719,18 +1090,15 @@
             measurementId: "G-2QGTD33DPQ"
         };
 
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
-        // ===== VARIÁVEIS GLOBAIS =====
-        let usuarioAtual = 'fernando'; // Login automático sem tela
+        let usuarioAtual = 'fernando';
         let clientes = [];
         let ordens = [];
         let proximoNumeroOS = 1;
         let osAtual = null;
 
-        // ===== INICIALIZAÇÃO DO SISTEMA =====
         function inicializarSistema() {
             carregarProximoNumeroOS();
             carregarClientes();
@@ -747,7 +1115,6 @@
             document.getElementById('dataAtual').textContent = `${dia}/${mes}/${ano}`;
         }
 
-        // ===== NAVEGAÇÃO ENTRE TELAS =====
         function mostrarNovaOS() {
             document.getElementById('novaOS').style.display = 'block';
             document.getElementById('clientes').style.display = 'none';
@@ -782,7 +1149,6 @@
             carregarOrdens();
         }
 
-        // ===== FUNÇÕES DE CLIENTES =====
         function salvarCliente() {
             const nome = document.getElementById('novoClienteNome').value.trim();
             const cpf = document.getElementById('novoClienteCPF').value.trim();
@@ -939,7 +1305,6 @@
             mostrarClientes();
         }
 
-        // ===== FUNÇÕES DE ORDEM DE SERVIÇO =====
         function carregarProximoNumeroOS() {
             database.ref('usuarios/' + usuarioAtual + '/configuracoes/proximaOS').once('value')
                 .then((snapshot) => {
@@ -1105,7 +1470,6 @@
             }
         }
 
-        // ===== FUNÇÕES DE CÁLCULO =====
         function calcularTotais() {
             let totalServicos = 0;
             let totalProdutos = 0;
