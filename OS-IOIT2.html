@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   title>Sistema de Ordem de Serviço - IOIT</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
+    <style>
+        /* ===== ESTILOSERAIS ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        /* ===== TELA DE LOGIN ===== */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            animation: slideIn 0.4s-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-field label {
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .form-field input {
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-field input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-field input::placeholder {
+            color: #bdc3c7;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #667eea 0%, #7642 100%);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #fcc;
+            animation: shake 0.4s ease;
+            display: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: px solid #ecf0f1;
+        }
+
+        .login-footer p {
+            color: #95a5a6;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        /* ===== CONTEÚDO PRINCIPAL ===== */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #667eea;
+            margin-bottom: 20px;
+        }
+
+        .nav-menu h2 {
+            color: #2c3e50;
+            font-size: 24px;
+        }
+
+        .nav-btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn-logout:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .content-area {
+            padding: 20px 0;
+            min-height: 500px;
+        }
+
+        .os-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER DA OS ===== */
+        .os-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .os-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .os-date {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ===== SEÇÕES ===== */
+        .section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        . h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* ===== FORMULÁRIOS ===== */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* ===== CLIENTE ===== */
+        .cliente-select {
+            margin-bottom: 15px;
+        }
+
+        .client-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #eecef;
+        }
+
+        .client-details p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .client-details strong {
+            color: #2c3e50;
+        }
+
+        /* ===== TABELAS ===== */
+        .table-container {
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        td {
+            background: white;
+        }
+
+        tr:hover td {
+            background: #f8f9fa;
+        }
+
+        .table-input {
+            width: 100%;
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+
+        .table-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+
+        .btn-add {
+            background: #27ae60;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            background: #229954;
+        }
+
+        .btn-remove {
+            background: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-remove:hover {
+            background: #c0392b;
+        }
+
+        /* ===== TOTAIS ===== */
+        .total-section {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: right;
+            border: 2px solid #27ae60;
+        }
+
+        .total-line {
+            font-size: 16px;
+            margin: 8px 0;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .total-final {
+            font-size: 24px;
+            color: #27ae60;
+            border-top: 2px solid #27ae60;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        /* ===== PAGAMENTO ===== */
+        .payment-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        /* ===== ASSINATURAS ===== */
+        .signature-section {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #333;
+        }
+
+        .signature-box {
+            flex: 1;
+            text-align: center;
+            margin: 0 20px;
+        }
+
+        .signature-line {
+            border-bottom: 2px solid #333;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .signature-box p {
+            font-size: 14px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        /* ===== AÇÕES DA OS ===== */
+        .os-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            font-size: 16px;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+            padding 12px 30px;
+            font-size: 16px;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        /* ===== RODAPÉ DE IMPRESSÃO ===== */
+        .print-footer {
+            display: none;
+        }
+
+        /* ===== RESPONSIVO ===== */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .os-number {
+                font-size: 24px;
+            }
+
+            .payment-section {
+                grid-template-columns: 1fr;
+            }
+
+            .signature-section {
+                flex-direction: column;
+            }
+
+            .signature-box {
+                margin: 20px 0;
+            }
+
+            .os-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 30px 20px;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* ===== CSS OTIMIZADO PARA IMPRESSÃO - 1 FOLHA A4 ===== */
+        @page {
+            size: A4 portrait;
+            margin: 0.5cm 1cm;
+        }
+
+        @media print {
+            /* ===== ELEMENTOS A SEREM ESCONDIDOS ===== */
+            .nav-menu,
+            .btn,
+            .nav-btn-logout,
+            .search-bar,
+            .cliente-select button,
+            .,
+            .os-actions,
+            .print-btn,
+            .login-container {
+                display: none !important;
+            }
+
+            /* ===== CONFIGURAÇÕES GERAIS DA IMPRESSÃO ===== */
+            body {
+                font-family: 'Arial', sans-serif !important;
+                font-size: 9px !important;
+                line-height: 1.1 !important;
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .container,
+            .content-area,
+            .os-container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                max: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                min-height: auto !important;
+            }
+
+            /* ===== HEADER DA OS - COMPACT ===== */
+            .os-header {
+                background: #f8f9fa !important;
+                border: 1px solid #ddd !important;
+                border-radius: 0 !important;
+                padding: 6px 8px !important;
+                margin: 0 0 3px 0 !important;
+                text-align: center !important;
+                page-break-inside: avoid !;
+            }
+
+            .os-number {
+                font-size: 16px !important;
+                font-weight: bold !important;
+                color: #2c3e50 !important;
+                margin: 0 !important;
+                line-height: 1 !important;
+            }
+
+            .os-date {
+                font-size: 10px !important;
+                color: #666 !important;
+                margin: 0 !important;
+                font-weight: normal !important;
+            }
+
+            /* ===== SEÇÕES - MARGENS REDUZIDAS ===== */
+            .section {
+                background: white !important;
+                border: 1px solid #ddd !important;
+                border-radius: 0 !important;
+                padding: 6px 8px !important;
+                margin: 2px 0 !important;
+                page-break-inside: avoid !important;
+            }
+
+            .section h2 {
+                color: #2c3e50 !important;
+                margin: 3px 0 6px 0 !important;
+                font-size: 11px !important;
+                font-weight: bold !important;
+                border-bottom: 1px solid #ddd !important;
+                padding-bottom: 2px !important;
+                line-height: 1 !important;
+            }
+
+            .section h2::before {
+                content: "" !important;
+                display: none !important;
+            }
+
+            /* ===== FORMULÁRIOS - ULTRA COMPACTOS ===== */
+            .form-group {
+                margin-bottom: 4px !important;
+            }
+
+            .form-group label {
+                font-size: 9px !important;
+                font-weight: bold !important;
+                color: #333 !important;
+                margin-bottom: 1px !important;
+                display: block !important;
+                line-height: 1 !important;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea,
+            .table-input {
+                width: 100% !important;
+                padding: 2px 4px !important;
+                border: 1px solid #ccc !important;
+                border-radius: 2px !important;
+                font-size: 9px !important;
+                line-height: 1.1 !important;
+                background: white !important;
+                box-sizing: border-box !important;
+                margin: 0 !important;
+            }
+
+            .form-group textarea {
+                min-height: 35px !important;
+                max-height: 50px !important;
+                resize: none !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            /* ===== DADOS DO CLIENTE - COMPACTADO ===== */
+            .cliente-select {
+                margin-bottom: 4px !important;
+            }
+
+            .cliente-select input {
+                width: 100% !important;
+                margin-bottom: 2px !important;
+            }
+
+            .client-details {
+                background: #f8f9fa !important;
+                padding: 4px !important;
+                border-radius: 2px !important;
+                margin-top: 2px !important;
+                border: 1px solid #e9ecef !important;
+            }
+
+            .client-details p {
+                margin: 1px 0 !important;
+                font-size: 8px !important;
+                line-height: 1 !important;
+            }
+
+            /* ===== TABELAS ULTRA COMPACTAS ===== */
+            .table-container {
+                overflow: visible !important;
+                margin: 3px 0 !important;
+                page-break-inside: auto !important;
+            }
+
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 8 !important;
+                margin: 0 !important;
+            }
+
+            th, td {
+                border: 1px solid #ddd !important;
+                padding: 2px 3px !important;
+                text-align: left !important;
+                vertical-align: top !important;
+                line-height: 1 !important;
+            }
+
+            th {
+                background: #f8f9fa !important;
+                color: #333 !important;
+                font-weight: bold !important;
+                font-size: 7px !important;
+                padding: 3px 2px !important;
+                text-align: center !important;
+                height: 16px !important;
+            }
+
+            td {
+                font-size: 8px !important;
+                height: 18px !important;
+            }
+
+            thead {
+                display: table-header-group !important;
+            }
+
+            tfoot {
+                display: table-footer-group !important;
+            }
+
+            tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
+
+            /* ===== LARGURAS OTIMIZADAS DAS COLUNAS ===== */
+            #tabelaServicos th:nth-child(1),
+            #tabelaServicos td:nth-child(1) {
+                width: 6% !important;
+                text-align: center !important;
+            }
+
+            #tabelaServicos th:nth-child(2),
+            #tabelaServicos td:nth-child(2) {
+                width: 50% !important;
+            }
+
+            #tabelaServicos th:nth-child(3),
+            #tabelaServicos td:nth-child(3) {
+                width: 8% !important;
+                text-align: center !important;
+            }
+
+            #tabelaServicos th:nth-child(4),
+            #tabelaServicos td:nth-child(4) {
+                width: 12% !important;
+                text-align: right !important;
+            }
+
+            #tabelaServicos th:nth-child(5),
+            #tabelaServicos td:nth-child(5) {
+                width: 12% !important;
+                text-align: right !important;
+                font-weight: bold !important;
+            }
+
+            #tabelaServicos th:nth-child(6),
+            #tabelaServicos td:nth-child(6) {
+                width: 12% !important;
+                text-align: center !important;
+            }
+
+            #tabelaProdutos th:nth-child(1),
+            #tabelaProdutos td:nth-child(1) {
+                width: 6% !important;
+                text-align: center !important;
+            }
+
+            #tabelaProdutos th:nth-child(2),
+            #tabelaProdutos td:nth-child(2) {
+                width: 45% !important;
+            }
+
+            #tabelaProdutos th:nth-child(3),
+            #tabelaProdutos td:nth-child(3) {
+                width: 6% !important;
+                text-align: center !important;
+            }
+
+            #tabelaProdutos th:nth-child(4),
+            #tabelaProdutos td:nth-child(4) {
+                width: 8% !important;
+                text-align: center !important;
+            }
+
+            #tabelaProdutos th:nth-child(5),
+            #tabelaProdutos td:nth-child(5) {
+                width: 12% !important;
+                text-align: right !important;
+            }
+
+            #tabelaProdutos th:nth-child(6),
+            #tabelaProdutos td:nth-child(6) {
+                width: 11% !important;
+                text-align: right !important;
+                font-weight: bold !important;
+            }
+
+            #tabelaProdutos th:nth-child(7),
+            #tabelaProdutos td:nth-child(7) {
+                width: 12% !important;
+                text-align: center !important;
+            }
+
+            .table-input {
+                border: none !important;
+                background: transparent !important;
+                padding: 1px 2px !;
+                height: 16px !important;
+            }
+
+            /* ===== TOTAIS - COMPACTOS ===== */
+            .total-section {
+                background: #e8f5e8 !important;
+                padding: 6px 8px !important;
+                border-radius: 0 !important;
+                margin: 6px 0 !important;
+                text-align: right !important;
+ border: 1px solid #27ae60 !important;
+            }
+
+            .total-line {
+                font-size: 10px !important;
+                margin: 2px 0 !important;
+                font-weight: bold !important;
+                line-height: 1 !important;
+            }
+
+            .total-final {
+                font-size: 12px !important;
+                color: #27ae60 !important;
+                border-top: 1px solid #27ae60 !important;
+                padding-top: 3px !important;
+                margin-top: 4px !important;
+                font-weight: bold !important;
+                line-height: 1.1 !important;
+            }
+
+            /* ===== PAGAMENTO - ULTRA COMPACTO ===== */
+            .payment-section {
+                display: block !important;
+                margin-top: 6px !important;
+            }
+
+            .payment-section .form-group {
+                display: inline-block !important;
+                width: 23% !important;
+               -align: top !important;
+                margin: 0 0 3px 0 !important;
+            }
+
+            .payment-section .form-group:nth-child(4) {
+                width: 31% !important;
+            }
+
+            .payment-section input,
+            .payment-section select {
+                padding: 2px 3px !important;
+                font-size: 9px !important;
+                height: 18px !important;
+            }
+
+            .payment-section label {
+                font-size: 8px !important;
+                margin-bottom: 1px !important;
+            }
+
+            /* ===== OBSERVAÇÕES - REDUZIDA ===== */
+            #observacoes {
+                min-height: 40px !important;
+                max-height: 60px !important;
+                font-size: 9px !important;
+                line-height: 1.1 !important;
+            }
+
+            /* ===== ASSINATURAS - COMPACTAS ===== */
+            .signature-section {
+                display: flex !important;
+                justify-content: space-between !important;
+                margin-top: 15px !important;
+                padding-top: 8px !important;
+                border-top: 1px solid #333 !important;
+                page-break-inside: avoid !important;
+            }
+
+            .signature-box {
+                flex: 1 !important;
+                text-align: center !important;
+                margin: 0 8px !important;
+            }
+
+            .signature-box p {
+                font-size: 9px !important;
+                margin: 1px 0 !important;
+                line-height: 1 !important;
+            }
+
+            .signature-line {
+                border-bottom: 1px solid #333 !important;
+                height: 20px !important;
+                margin: 3px 0 !important;
+            }
+
+            /* ===== RODAPÉ COM METADADOS ===== */
+            .print-footer {
+                display: block !important;
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                text-align: center !important;
+                font-size: 7px !important;
+                color: #666 !important;
+                padding: 3px 0 !important;
+                border-top: 1px solid #ddd !important;
+            }
+
+            /* ===== CORES E AJUSTES FINAIS ===== */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* ===== RESPONSIVO PARA IMPRESSÃO MOBILE ===== */
+            @media print and (max-width: 600px) {
+                .payment-section .form-group {
+                    width: 100% !important;
+                    display: block !important;
+                    margin-bottom: 3px !important;
+                }
+
+                .signature-section {
+                    flex-direction: column !important;
+                }
+
+                .signature-box {
+                    margin: 3px 0 !important;
+                }
+
+                body {
+                    font-size: 8px !important;
+                }
+
+                th, td {
+                    padding: 1px 2px !important;
+                    font-size: 7px !important;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== TELA DE LOGIN ===== -->
+    <div class="login-container"="loginContainer">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🔧 Sistema de OS</h1>
+                <p>Faça login para continuar</p>
+            </div>
+            
+            <form class="login-form" id="loginForm">
+                <div class="form-field">
+                    <label for="username">Usuário</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Digite seu usuário"
+                        required 
+                        autocomplete="username"
+                    >
+                </div>
+                
+                <div class="form-field">
+                    <label for="password">Senha</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Digite sua senha"
+                        required 
+                        autocomplete="current-password"
+                    >
+                </div>
+                
+                <div id="loginError" class="login-error"></div>
+                
+                <button type="submit" class="login-btn">Entrar</button>
+            </form>
+            
+            <div class="login-footer">
+                <p>© 2025 Sistema de Ordem de Serviço</p>
+                <p style="margin-top: 10px; font-size: 11px; color: #7f8c8d;">
+                    <strong>Usuário:</strong> admin | <strong>Senha:</strong> admin123
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CONTEÚDO PRINCIPAL (oculto até login) ===== -->
+    <div id="mainContent" style="display: none;">
+        <div class="container">
+            <!-- MENU DE NAVEGAÇÃO -->
+            <div class="nav-menu">
+                <h2>📋 Sistema de Ordem de Serviço</h2>
+                <button class="nav-btn-logout" onclick="logout()">🚪 Sair</button>
+            </div>
+
+            <!-- ÁREA DE CONTEÚDO -->
+            <div class="content-area">
+                <div class="os-container">
+                    <!-- HEADER DA OS -->
+                    <div class="os-header">
+                        <div class="os-number">OS #<span id="osNumber">00001</span></div>
+                        <div class="os-date">Data: <span id="osDate"></span></div>
+                    </div>
+
+                    <!-- SEÇÃO: DADOS DO CLIENTE -->
+                    <div class="section">
+                        <h2>👤 Dados do Cliente</h2>
+                        <div class="cliente-select">
+                            <div class="form-group">
+                                <label for="clienteNome">Nome do Cliente</label>
+                                <input type="text" id="clienteNome" placeholder="Digite o nome do cliente">
+                            </div>
+                        </div>
+                        <div class="client-details">
+                            <p><strong>Telefone:</strong> <input type="tel" id="clienteTelefone" placeholder="(00) 00000-0000" style="border: none; background: transparent; width: 200px;"></p>
+                            <p><strong>Email:</strong> <input type="email" id="clienteEmail" placeholder="email@exemplo.com" style="border: none; background: transparent; width: 300px;"></p>
+                            <p><strong>Endereço:</strong> <input type="text" id="clienteEndereco" placeholder="Rua, número, bairro" style="border: none; background: transparent; width: 100%;"></p>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO: EQUIPAMENTO -->
+                    <div class="section">
+                        <h2>🖥 Equipamento</h2>
+                        <div class="form-group">
+                            <label for="equipamento">Tipo de Equipamento</label>
+                            <input type="text" id="equipamento" placeholder="Ex: Notebook Dell Inspiron 15">
+                                                </div>
+                        <div class="form-group">
+                            <label for="defeito">Defeito Relatado</label>
+                            <textarea id="defeito" placeholder="Descreva o problema relatado pelo cliente"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO: SERVIÇOS -->
+                    <div class="section">
+                        <h2>🔧 Serviços</h2>
+                        <div class="table-container">
+                            <table id="tabelaServicos">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Descrição do Serviço</th>
+                                        <th>Qtd</th>
+                                        <th>Valor Unit. (R$)</th>
+                                        <th>Subtotal (R$)</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="servicosBody">
+                                    <tr>
+                                        <td style="text-align: center;">1</td>
+                                        <td><input type="text" class="table-input" placeholder="Ex: Formatação e instalação do Windows" oninput="calcularTotais()"></td>
+                                        <td><input type="number" class="table-input" value="1" min="1" style="text-align: center;" oninput="calcularTotais()"></td>
+                                        <td><input type="number" class="table-input" step="0.01" min="0" placeholder="0,00" style="text-align: right;" oninput="calcularTotais()"></td>
+                                        <td style="text-align: right; font-weight: bold;" class="subtotal-servico">R$ 0,00</td>
+                                        <td style="text-align: center;"><button class="btn btn-remove" onclick="removerLinha(this)">✕</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-add" onclick="adicionarServico()">➕ Adicionar Serviço</button>
+                    </div>
+
+                    <!-- SEÇÃO: PRODUTOS/PEÇAS -->
+                    <div class="section">
+                        <h2>📦 Produtos/Peças</h2>
+                        <div class="table-container">
+                            <table id="tabelaProdutos">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Descrição do Produto</th>
+                                        <th>Qtd</th>
+                                        <th>Unid.</th>
+                                        <th>Valor Unit. (R$)</th>
+                                        <th>Subtotal (R$)</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="produtosBody">
+                                    <tr>
+                                        <td style="text-align: center;">1</td>
+                                        <td><input type="text" class="table-input" placeholder="Ex: Memória RAM 8GB DDR4" oninput="calcularTotais()"></td>
+                                        <td><input type="number" class="table-input" value="1" min="1" style="text-align: center;" oninput="calcularTotais()"></td>
+                                        <td><input type="text" class="table-input" value="UN" style="text-align: center;" oninput="calcularTotais()"></td>
+                                        <td><input type="number" class="table-input" step="0.01" min="0" placeholder="0,00" style="text: right;" oninput="calcularTotais()"></td>
+                                        <td style="text-align: right; font-weight: bold;" class="subtotal-produto">R$ 0,00</td>
+                                        <td style="text-align: center;"><button class="btn btn-remove" onclick="removerLinha(this)">✕</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-add" onclick="adicionarProduto()">➕ Adicionar Produto</button>
+                    </div>
+
+                    <!-- SEÇÃO: TOTAIS -->
+                    <div class="total-section">
+                        <div class="total-line">Subtotal Serviços: <span id="subtotalServicos">R$ 0,00</span></div>
+                        <div class="total-line">Subtotal Produtos: <span id="subtotalProdutos">R$ 0,00</span></div>
+                        <div class="total-final">TOTAL GERAL: <span id="totalGeral">R$ 0,00</span></div>
+                    </div>
+
+                    <!-- SEÇÃO: PAGAMENTO -->
+                    <div class="section">
+                        <h2>💳 Forma de Pagamento</h2>
+                        <div class="payment-section">
+                            <div class="form-group">
+                                <label for="formaPagamento">Forma de Pagamento</label>
+                                <select id="formaPagamento">
+                                    <option value="">Selecione...</option>
+                                    <option value="dinheiro">Dinheiro</option>
+                                    <option value="pix">PIX</option>
+                                    <option value="debito">Cartão de Débito</option>
+                                    <option value="credito">Cartão de Crédito</option>
+                                    <option value="transferencia">Transferência</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="parcelas">Parcelas</label>
+                                <input type="number" id="parcelas" value="1" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="entrada">Entrada</label>
+                                <input type="number" id="entrada" step="0.01" min="0" placeholder="0,00">
+                            </div>
+                            <div class="form-group">
+                                <label for="dataVencimento">Data de Vencimento</label>
+                                <input type="date" id="dataVencimento">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO: OBSERVAÇÕES -->
+                    <div class="section">
+                        <h2>📝 Observações</h2>
+                        <div class="form-group">
+                            <textarea id="observacoes" placeholder="Observações adicionais sobre o serviço..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- SEÇÃO: ASSINATURAS -->
+                    <div class="signature-section">
+                        <div class="signature-box">
+                            <div class="signature-line"></div>
+                            <p><strong>Assinatura do Cliente</strong></p>
+                            <p>CPF: ___________________</p>
+                        </div>
+                        <div class="signature-box">
+                            <div class="signature-line"></div>
+                            <p><strong>Assinatura do Técnico</strong></p>
+                            <p>Data: ___/___/______</p>
+                        </div>
+                    </div>
+
+                    <!-- AÇÕES DA OS -->
+                    <div class="os-actions">
+                        <button class="btn btn-primary" onclick="imprimirOS()">🖨️ Imprimir OS</button>
+                        <button class="btn btn-secondary" onclick="salvarOS()">💾 Salvar OS</button>
+                        <button class="btn btn-secondary" onclick="novaOS()">📄 Nova OS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ DE IMPRESSÃO -->
+    <div class="print-footer">
+        Impresso em: <span id="printDate"></span> | OS gerada por: Sistema de Ordem de Serviço
+    </div>
+
+    <script>
+        // ===== CONFIGURAÇÃO DO FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnBBc_2-RI2H07TEd8H8u6OZcWRZ5n5uY",
+            authDomain: "os-ioit.firebaseapp.com",
+            databaseURL: "https://os-ioit-default-rtdb.firebaseio.com",
+            projectId: "os-ioit",
+            storageBucket: "os-ioit.firebasestorage.app",
+            messagingSenderId: "508837030553",
+            appId: "1:508837030553:web:52a80e098b44b76f05e608",
+            measurementId: "G-2QGTD33DPQ"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // ===== VARIÁVEIS GLOBAIS =====
+        let proximaOS = 1;
+        let isLoggedIn = false;
+
+        // ===== SISTEMA DE LOGIN =====
+        const CREDENTIALS = {
+            username: 'admin',
+            password: 'admin123'
+        };
+
+        const loginContainer = document.getElementById('loginContainer');
+        const mainContent = document.getElementById('mainContent');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+
+        // Verifica se já está logado
+        window.addEventListener('DOMContentLoaded', () => {
+ const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            
+            if (isLoggedIn === 'true') {
+                showMainContent();
+                inicializarSistema();
+            }
+
+            // Inicializa data da OS
+            document.getElementById('osDate').textContent = new Date().toLocaleDateString('pt-BR');
+        });
+
+        // Processa o login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (username === CREDENTIALS.username && password === CREDENTIALS.password) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('username', username);
+                showMainContent();
+                inicializarSistema();
+            } else {
+                showError('Usuário ou senha incorretos!');
+            }
+        });
+
+        function showMainContent() {
+            loginContainer.style.display = 'none';
+            mainContent.style.display = 'block';
+            isLoggedIn = true;
+        }
+
+        function showError(message) {
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+            
+            setTimeout(() => {
+                loginError.style.display = 'none';
+            }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Deseja realmente sair do sistema?')) {
+                sessionStorage.removeItem('isLoggedIn');
+                sessionStorage.removeItem('username');
+                location.reload();
+            }
+        }
+
+        // Previne acesso direto ao conteúdo
+        setInterval(() => {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true' && mainContent.style.display !== 'none') {
+                location.reload();
+            }
+        }, 5000);
+
+        // ===== INICIALIZAÇÃO DO SISTEMA =====
+        function inicializarSistema() {
+            carregarProximaOS();
+            calcularTotais();
+            atualizarDataImpressao();
+        }
+
+        // ===== MELHORIA 3: NUMERAÇÃO AUTOMÁTICA DA OS =====
+        function carregarProximaOS() {
+            database.ref('configuracoes/proximaOS').once('value')
+                .then((snapshot) => {
+                    proximaOS = snapshot.val() || 1;
+                    document.getElementById('osNumber').textContent = String(proximaOS).padStart(5, '0');
+                })
+                .catch((error) => {
+                    console.error('Erro ao carregar próxima OS:', error);
+                    document.getElementById('osNumber').textContent = '00001';
+                });
+        }
+
+        // ===== MELHORIA 1: CÁLCULO AUTOMÁTICO DE TOTAIS =====
+        function calcularTotais() {
+            let totalServicos = 0;
+            let totalProdutos = 0;
+
+            // Calcular serviços
+            document.querySelectorAll('#servicosBody tr').forEach((row, index) => {
+                const qtdInput = row.cells[2].querySelector('input');
+                const valorInput = row.cells[3].querySelector('input');
+                const subtotalCell = row.cells[4];
+                
+                const qtd = parseFloat(qtdInput.value) || 0;
+                const valor = parseFloat(valorInput.value) || 0;
+                const subtotal = qtd * valor;
+                
+                subtotalCell.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+                totalServicos += subtotal;
+                
+                // Renumerar itens
+                row.cells[0].textContent = index + 1;
+            });
+
+            // Calcular produtos
+            document.querySelectorAll('#produtosBody tr').forEach((row, index) => {
+                const qtdInput = row.cells[2].querySelector('input');
+                const valorInput = row.cells[4].querySelector('input');
+                const subtotalCell = row.cells[5];
+                
+                const qtd = parseFloat(qtdInput.value) || 0;
+                const valor = parseFloat(valorInput.value) || 0;
+                const subtotal = qtd * valor;
+                
+                subtotalCell.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+                totalProdutos += subtotal;
+                
+                // Renumerar itens
+                row.cells[0].textContent = index + 1;
+            });
+
+            // Atualizar totais na tela
+            document.getElementById('subtotalServicos').textContent = `R$ ${totalServicos.toFixed(2).replace('.', ',')}`;
+            document.getElementById('subtotalProdutos').textContent = `R$ ${totalProdutos.toFixed(2).replace('.', ',')}`;
+            document.getElementById('totalGeral').textContent = `R$ ${(totalServicos + totalProdutos).toFixed(2).replace('.', ',')}`;
+        }
+
+        // Adicionar evento de input para calcular automaticamente
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('table-input') && 
+                (e.target.type === 'number' || e.target.type === 'text')) {
+                calcularTotais();
+            }
+        });
+
+        // ===== MELHORIA 2: SALVAMENTO NO FIREBASE =====
+        function salvarOS() {
+            // Validação básica
+            const clienteNome = document.getElementById('clienteNome').value.trim();
+            const equipamento = document.getElementById('equipamento').value.trim();
+            const totalGeral = document.getElementById('totalGeral').textContent;
+            
+            if (!clienteNome) {
+                alert('⚠️ Por favor, preencha o nome do cliente!');
+                return;
+            }
+            
+            if (!equipamento) {
+                alert('⚠️ Por favor, preencha o tipo de equipamento!');
+                return;
+            }
+            
+            if (totalGeral === 'R$ 0,00') {
+                alert('⚠️ Adicione pelo menos um serviço ou produto!');
+                return;
+            }
+
+            // Coletar dados da OS
+            const osData = {
+                numero: document.getElementById('osNumber').textContent,
+                data: document.getElementById('osDate').textContent,
+                dataISO: new Date().toISOString(),
+                cliente: {
+                    nome: document.getElementById('clienteNome').value,
+                    telefone: document.getElementById('clienteTelefone').value,
+                    email: document.getElementById('clienteEmail').value,
+                    endereco: document.getElementById('clienteEndereco').value
+                },
+                equipamento: {
+                    tipo: document.getElementById('equipamento').value,
+                    serie: document.getElementById('numeroSerie').value,
+                    defeito: document.getElementById('defeito').value
+                },
+                servicos: coletarServicos(),
+                produtos: coletarProdutos(),
+                totais: {
+                    servicos: document.getElementById('subtotalServicos').textContent,
+                    produtos: document.getElementById('subtotalProdutos').textContent,
+                    geral: document.getElementById('totalGeral').textContent
+                },
+                pagamento: {
+                    forma: document.getElementById('formaPagamento').value,
+                    parcelas: document.getElementById('parcelas').value,
+                    entrada: document.getElementById('entrada').value,
+                    vencimento: document.getElementById('dataVencimento').value
+                },
+                observacoes: document.getElementById('observacoes').value,
+                timestamp: Date.now(),
+                status: 'Pendente'
+            };
+
+            // Salvar no Firebase
+            const numeroAtual = parseInt(osData.numero);
+            
+            database.ref('ordens/' + numeroAtual).set(osData)
+                .then(() => {
+                    // Incrementar próximo número
+                    return database.ref('configuracoes/proximaOS').set(numeroAtual + 1);
+                })
+                .then(() => {
+                    alert(`✅ OS #${osData.numero} salva com sucesso no Firebase!`);
+                    
+                    // Limpar formulário para nova OS
+                    limparFormulario();
+                    
+                    // Carregar próxima OS
+                    carregarProximaOS();
+                })
+                .catch((error) => {
+                    console.error('Erro ao salvar OS:', error);
+                    alert('❌ Erro ao salvar OS: ' + error.message);
+                });
+        }
+
+        function coletarServicos() {
+            const servicos = [];
+            document.querySelectorAll('#servicosBody tr').forEach((row, index) => {
+                const descricao = row.cells[1].querySelector('input').value.trim();
+                const qtd = row.cells[2].querySelector('input').value;
+                const valor = row.cells[3].querySelector('input').value;
+                const subtotal = row.cells[4].textContent;
+                
+                if (descricao) {
+                    servicos.push({
+                        item: index + 1,
+                        descricao: descricao,
+                        quantidade: qtd,
+                        valorUnitario: valor,
+                        subtotal: subtotal
+                    });
+                }
+            });
+            return servicos;
+        }
+
+        function coletarProdutos() {
+            const produtos = [];
+            document.querySelectorAll('#produtosBody tr').forEach((row, index) => {
+                const descricao = row.cells[1].querySelector('input').value.trim();
+                const qtd = row.cells[2].querySelector('input').value;
+                const unidade = row.cells[3].querySelector('input').value;
+                const valor = row.cells[4].querySelector('input').value;
+                const subtotal = row.cells[5].textContent;
+                
+                if (descricao) {
+                    produtos.push({
+                        item: index + 1,
+                        descricao: descricao,
+                        quantidade: qtd,
+                        unidade: unidade,
+                        valorUnitario: valor,
+                        subtotal: subtotal
+                    });
+                }
+            });
+            return produtos;
+        }
+
+        function limparFormulario() {
+            // Limpar campos do cliente
+            document.getElementById('clienteNome').value = '';
+            document.getElementById('clienteTelefone').value = '';
+            document.getElementById('clienteEmail').value = '';
+            document.getElementById('clienteEndereco').value = '';
+            
+            // Limpar equipamento
+            document.getElementById('equipamento').value = '';
+            document.getElementById('numeroSerie').value = '';
+            document.getElementById('defeito').value = '';
+            
+            // Limpar pagamento
+            document.getElementById('formaPagamento').value = '';
+            document.getElementById('parcelas').value = '1';
+            document.getElementById('entrada').value = '';
+            document.getElementById('dataVencimento').value = '';
+            
+            // Limpar observações
+            document.getElementById('observacoes').value = '';
+            
+            // Recriar tabelas com uma linha vazia
+            recriarTabelaServicos();
+            recriarTabelaProdutos();
+            
+            // Recalcular totais
+            calcularTotais();
+        }
+
+        function recriarTabelaServicos() {
+            const tbody = document.getElementById('servicosBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td style="text-align: center;">1</td>
+                    <td><input type="text" class="table-input" placeholder="Ex: Formatação e instalação do Windows" oninput="calcularTotais()"></td>
+                    <td><input type="number" class="table-input" value="1" min="1" style="text-align: center;" oninput="calcularTotais()"></td>
+                    <td><input type="number" class="table-input" step="0.01" min="0" placeholder="0,00" style="text-align: right;" oninput="calcularTotais()"></td>
+                    <td style="text-align: right; font-weight: bold;" class="subtotal-servico">R$ 0,00</td>
+                    <td style="text-align: center;"><button class="btn btn-remove" onclick="removerLinha(this)">✕</button></td>
+                </tr>
+            `;
+        }
+
+        function recriarTabelaProdutos() {
+            const tbody = document.getElementById('produtosBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td style="text-align: center;">1</td>
+                    <td><input type="text" class="table-input" placeholder="Ex: Memória RAM 8GB DDR4" oninput="calcularTotais()"></td>
+                    <td><input type="number" class="table-input" value="1" min="1" style="text-align: center;" oninput="calcularTotais()"></td>
+                    <td><input type="text" class="table-input" value="UN" style="text-align: center;" oninput="calcularTotais()"></td>
+                    <td><input type="number" class="table-input" step="0.01" min="0" placeholder="0,00" style="text-align: right;" oninput="calcularTotais()"></td>
+                    <td style="text-align: right; font-weight: bold;" class="subtotal-produto">R$ 0,00</td>
+                    <td style="text-align: center;"><button class="btn btn-remove" onclick="removerLinha(this)">✕</button></td>
+                </tr>
+            `;
+        }
+
+        // ===== FUNÇÕES DA OS =====
+        function adicionarServico() {
+            const tbody = document.getElementById('servicosBody');
+            const novaLinha = tbody.rows[0].cloneNode(true);
+            const numeroItem =.rows.length + 1;
+            
+            // Limpar valores da nova linha
+            novaLinha.cells[0].textContent = numeroItem;
+            novaLinha.cells[1].querySelector('input').value = '';
+            novaLinha.cells[2].querySelector('input').value = '1';
+            novaLinha.cells[3].querySelector('input').value = '';
+            novaLinha.cells[4].textContent = 'R$ 0,00';
+            
+            tbody.appendChild(novaLinha);
+            calcularTotais();
+        }
+
+        function adicionarProduto() {
+            const tbody = document.getElementById('produtosBody');
+            const novaLinha = tbody.rows[0].cloneNode(true);
+            const numeroItem = tbody.rows.length + 1;
+            
+            // Limpar valores da nova linha
+            novaLinha.cells[0].textContent = numeroItem;
+            novaLinha.cells[1].querySelector('input').value = '';
+            novaLinha.cells[2].querySelector('input').value = '1';
+            novaLinha.cells[3].querySelector('input').value = 'UN';
+            novaLinha.cells[4].querySelector('input').value = '';
+            novaLinha.cells[5].textContent = 'R$ 0,00';
+            
+            tbody.appendChild(novaLinha);
+            calcularTotais();
+        }
+
+        function removerLinha(btn) {
+            const row = btn.closest('tr');
+            const tbody = row.parentElement;
+            
+            if (tbody.rows.length > 1) {
+                row.remove();
+                
+                // Renumera os itens
+                Array.from(tbody.rows).forEach((row, index) => {
+                    row.cells[0].textContent = index + 1;
+                });
+                
+                calcularTotais();
+            } else {
+                alert('Deve haver pelo menos uma linha na tabela!');
+            }
+        }
+
+        function imprimirOS() {
+            // Atualizar data de impressão
+            atualizarDataImpressao();
+            window.print();
+        }
+
+        function novaOS() {
+            if (confirm('Deseja criar uma nova OS? Os dados não salvos serão perdidos.')) {
+                limparFormulario();
+            }
+        }
+
+        function atualizarDataImpressao() {
+            document.getElementById('printDate').textContent = new Date().toLocaleString('pt-BR');
+        }
+
+        // ===== EVENTOS DE IMPRESSÃO =====
+        window.addEventListener('beforeprint', () => {
+            atualizarDataImpressao();
+        });
+
+        window.addEventListener('afterprint', () => {
+            // Limpar data após impressão
+            document.getElementById('printDate').textContent = '';
+        });
+
+        // Inicializar cálculos ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            if (isLoggedIn) {
+                calcularTotais();
+            }
+        });
+    </script>
+</body>
+</html>
+
