@@ -1,1339 +1,1679 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Ordem de Serviço</title>
-  
-  <style>
-    /* ===== ESTILOS GERAIS ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #f5f7fa;
-      color: #333;
-    }
-
-    /* ===== TELA DE LOGIN ===== */
-    .login-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 20px;
-    }
-
-    .login-box {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      padding: 40px;
-      width: 100%;
-      max-width: 400px;
-      animation: slideIn 0.4s ease-out;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .login-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .login-header h1 {
-      color: #2c3e50;
-      font-size: 28px;
-      margin: 0 0 10px 0;
-      font-weight: 700;
-    }
-
-    .login-header p {
-      color: #7f8c8d;
-      font-size: 14px;
-      margin: 0;
-    }
-
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-field label {
-      color: #2c3e50;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .form-field input {
-      padding: 12px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      outline: none;
-    }
-
-    .form-field input:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-field input::placeholder {
-      color: #bdc3c7;
-    }
-
-    .login-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 10px;
-    }
-
-    .login-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    .login-btn:active {
-      transform: translateY(0);
-    }
-
-    .login-error {
-      background: #fee;
-      color: #c33;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      text-align: center;
-      border: 1px solid #fcc;
-      animation: shake 0.4s ease;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-10px); }
-      75% { transform: translateX(10px); }
-    }
-
-    .login-footer {
-      text-align: center;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid #ecf0f1;
-    }
-
-    .login-footer p {
-      color: #95a5a6;
-      font-size: 13px;
-      margin: 0;
-    }
-
-    /* ===== CONTEÚDO PRINCIPAL ===== */
-    .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .nav-menu {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 0;
-      border-bottom: 2px solid #667eea;
-      margin-bottom: 20px;
-    }
-
-    .nav-menu h2 {
-      color: #2c3e50;
-      font-size: 24px;
-    }
-
-    .nav-btn-logout {
-      background: #e74c3c;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .nav-btn-logout:hover {
-      background: #c0392b;
-      transform: translateY(-2px);
-    }
-
-    .content-area {
-      padding: 20px 0;
-      min-height: 500px;
-    }
-
-    .os-container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    /* ===== HEADER DA OS ===== */
-    .os-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .os-number {
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .os-date {
-      font-size: 14px;
-      opacity: 0.9;
-    }
-
-    /* ===== SEÇÕES ===== */
-    .section {
-      background: white;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .section h2 {
-      color: #2c3e50;
-      margin-bottom: 15px;
-      font-size: 18px;
-      font-weight: 600;
-      border-bottom: 2px solid #667eea;
-      padding-bottom: 10px;
-    }
-
-    /* ===== FORMULÁRIOS ===== */
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      color: #2c3e50;
-      margin-bottom: 5px;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 6px;
-      font-size: 14px;
-      transition: all 0.3s ease;
-      font-family: 'Arial', sans-serif;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    /* ===== CLIENTE ===== */
-    .cliente-select {
-      margin-bottom: 15px;
-    }
-
-    .client-details {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 6px;
-      margin-top: 10px;
-      border: 1px solid #e9ecef;
-    }
-
-    .client-details p {
-      margin: 5px 0;
-      font-size: 14px;
-      color: #555;
-    }
-
-    .client-details strong {
-      color: #2c3e50;
-    }
-
-    /* ===== TABELAS ===== */
-    .table-container {
-      overflow-x: auto;
-      margin: 15px 0;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: left;
-      vertical-align: middle;
-    }
-
-    th {
-      background: #667eea;
-      color: white;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    td {
-      background: white;
-    }
-
-    tr:hover td {
-      background: #f8f9fa;
-    }
-
-    .table-input {
-      width: 100%;
-      border: 1px solid #ddd;
-      padding: 6px 8px;
-      font-size: 13px;
-      border-radius: 4px;
-    }
-
-    .table-input:focus {
-      outline: none;
-      border-color: #667eea;
-      background: #fff;
-    }
-
-    .btn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .btn-add {
-      background: #27ae60;
-      color: white;
-      margin-top: 10px;
-    }
-
-    .btn-add:hover {
-      background: #229954;
-    }
-
-    .btn-remove {
-      background: #e74c3c;
-      color: white;
-      padding: 6px 12px;
-      font-size: 12px;
-    }
-
-    .btn-remove:hover {
-      background: #c0392b;
-    }
-
-    /* ===== TOTAIS ===== */
-    .total-section {
-      background: #e8f5e8;
-      padding: 20px;
-      border-radius: 8px;
-      margin: 20px 0;
-      text-align: right;
-      border: 2px solid #27ae60;
-    }
-
-    .total-line {
-      font-size: 16px;
-      margin: 8px 0;
-      font-weight: 600;
-      color: #2c3e50;
-    }
-
-    .total-final {
-      font-size: 24px;
-      color: #27ae60;
-      border-top: 2px solid #27ae60;
-      padding-top: 10px;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    /* ===== PAGAMENTO ===== */
-    .payment-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    /* ===== ASSINATURAS ===== */
-    .signature-section {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 2px solid #333;
-    }
-
-    .signature-box {
-      flex: 1;
-      text-align: center;
-      margin: 0 20px;
-    }
-
-    .signature-line {
-      border-bottom: 2px solid #333;
-      height: 50px;
-      margin-bottom: 10px;
-    }
-
-    .signature-box p {
-      font-size: 14px;
-      color: #555;
-      margin: 5px 0;
-    }
-
-    /* ===== AÇÕES DA OS ===== */
-    .os-actions {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 2px solid #e0e0e0;
-    }
-
-    .btn-primary {
-      background: #667eea;
-      color: white;
-      padding: 12px 30px;
-      font-size: 16px;
-    }
-
-    .btn-primary:hover {
-      background: #5568d3;
-    }
-
-    .btn-secondary {
-      background: #95a5a6;
-      color: white;
-      padding: 12px 30px;
-      font-size: 16px;
-    }
-
-    .btn-secondary:hover {
-      background: #7f8c8d;
-    }
-
-    /* ===== RODAPÉ DE IMPRESSÃO ===== */
-    .print-footer {
-      display: none;
-    }
-
-    /* ===== RESPONSIVO ===== */
-    @media (max-width: 768px) {
-      .container {
-        margin: 10px;
-        padding: 15px;
-      }
-
-      .os-number {
-        font-size: 24px;
-      }
-
-      .payment-section {
-        grid-template-columns: 1fr;
-      }
-
-      .signature-section {
-        flex-direction: column;
-      }
-
-      .signature-box {
-        margin: 20px 0;
-      }
-
-      .os-actions {
-        flex-direction: column;
-      }
-
-      .btn {
-        width: 100%;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .login-box {
-        padding: 30px 20px;
-      }
-
-      .login-header h1 {
-        font-size: 24px;
-      }
-    }
-
-    /* ===== CSS OTIMIZADO PARA IMPRESSÃO - 1 FOLHA A4 ===== */
-    @page {
-      size: A4 portrait;
-      margin: 0.5cm 1cm;
-    }
-
-    @media print {
-      /* ===== ELEMENTOS A SEREM ESCONDIDOS ===== */
-      .nav-menu,
-      .btn,
-      .nav-btn-logout,
-      .search-bar,
-      .cliente-select button,
-      .loading,
-      .os-actions,
-      .print-btn,
-      .login-container {
-        display: none;
-      }
-
-      /* ===== CONFIGURAÇÕES GERAIS DA IMPRESSÃO ===== */
-      body {
-        font-family: 'Arial', sans-serif;
-        font-size: 9px;
-        line-height: 1.1;
-        background: white;
-        padding: 0;
-        margin: 0;
-      }
-
-      .container,
-      .content-area,
-      .os-container {
-        box-shadow: none;
-        border-radius: 0;
-        max-width: none;
-        margin: 0;
-        padding: 0;
-        min-height: auto;
-      }
-
-      /* ===== HEADER DA OS - COMPACTADO ===== */
-      .os-header {
-        background: #f8f9fa;
-        border: 1px solid #ddd;
-        border-radius: 0;
-        padding: 6px 8px;
-        margin: 0 0 3px 0;
-        text-align: center;
-        page-break-inside: avoid;
-      }
-
-      .os-number {
-        font-size: 16px;
-        font-weight: bold;
-        color: #2c3e50;
-        margin: 0;
-        line-height: 1;
-      }
-
-      .os-date {
-        font-size: 10px;
-        color: #666;
-        margin: 0;
-        font-weight: normal;
-      }
-
-      /* ===== SEÇÕES - MARGENS REDUZIDAS ===== */
-      .section {
-        background: white;
-        border: 1px solid #ddd;
-        border-radius: 0;
-        padding: 6px 8px;
-        margin: 2px 0;
-        page-break-inside: avoid;
-      }
-
-      .section h2 {
-        color: #2c3e50;
-        margin: 3px 0 6px 0;
-        font-size: 11px;
-        font-weight: bold;
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 2px;
-        line-height: 1;
-      }
-
-      .section h2::before {
-        content: "";
-        display: none;
-      }
-
-      /* ===== FORMULÁRIOS - ULTRA COMPACTOS ===== */
-      .form-group {
-        margin-bottom: 4px;
-      }
-
-      .form-group label {
-        font-size: 9px;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 1px;
-        display: block;
-        line-height: 1;
-      }
-
-      .form-group input,
-      .form-group select,
-      .form-group textarea,
-      .table-input {
-        width: 100%;
-        padding: 2px 4px;
-        border: 1px solid #ccc;
-        border-radius: 2px;
-        font-size: 9px;
-        line-height: 1.1;
-        background: white;
-        box-sizing: border-box;
-        margin: 0;
-      }
-
-      .form-group textarea {
-        min-height: 35px;
-        max-height: 50px;
-        resize: none;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* ===== DADOS DO CLIENTE - COMPACTADO ===== */
-      .cliente-select {
-        margin-bottom: 4px;
-      }
-
-      .cliente-select input {
-        width: 100%;
-        margin-bottom: 2px;
-      }
-
-      .client-details {
-        background: #f8f9fa;
-        padding: 4px;
-        border-radius: 2px;
-        margin-top: 2px;
-        border: 1px solid #e9ecef;
-      }
-
-      .client-details p {
-        margin: 1px 0;
-        font-size: 8px;
-        line-height: 1;
-      }
-
-      /* ===== TABELAS ULTRA COMPACTAS ===== */
-      .table-container {
-        overflow: visible;
-        margin: 3px 0;
-        page-break-inside: auto;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 8px;
-        margin: 0;
-      }
-
-      th, td {
-        border: 1px solid #ddd;
-        padding: 2px 3px;
-        text-align: left;
-        vertical-align: top;
-        line-height: 1;
-      }
-
-      th {
-        background: #f8f9fa;
-        color: #333;
-        font-weight: bold;
-        font-size: 7px;
-        padding: 3px 2px;
-        text-align: center;
-        height: 16px;
-      }
-
-      td {
-        font-size: 8px;
-        height: 18px;
-      }
-
-      thead {
-        display: table-header-group;
-      }
-
-      tfoot {
-        display: table-footer-group;
-      }
-
-      tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
-      }
-
-      /* ===== LARGURAS OTIMIZADAS DAS COLUNAS ===== */
-      #tabelaServicos th:nth-child(1), 
-      #tabelaServicos td:nth-child(1) {
-        width: 6%;
-        text-align: center;
-      }
-
-      #tabelaServicos th:nth-child(2), 
-      #tabelaServicos td:nth-child(2) {
-        width: 50%;
-      }
-
-      #tabelaServicos th:nth-child(3), 
-      #tabelaServicos td:nth-child(3) {
-        width: 8%;
-        text-align: center;
-      }
-
-      #tabelaServicos th:nth-child(4), 
-      #tabelaServicos td:nth-child(4) {
-        width: 12%;
-        text-align: right;
-      }
-
-      #tabelaServicos th:nth-child(5), 
-      #tabelaServicos td:nth-child(5) {
-        width: 12%;
-        text-align: right;
-        font-weight: bold;
-      }
-
-      #tabelaServicos th:nth-child(6), 
-      #tabelaServicos td:nth-child(6) {
-        width: 12%;
-        text-align: center;
-      }
-
-      #tabelaProdutos th:nth-child(1), 
-      #tabelaProdutos td:nth-child(1) {
-        width: 6%;
-        text-align: center;
-      }
-
-      #tabelaProdutos th:nth-child(2), 
-      #tabelaProdutos td:nth-child(2) {
-        width: 45%;
-      }
-
-      #tabelaProdutos th:nth-child(3), 
-      #tabelaProdutos td:nth-child(3) {
-        width: 6%;
-        text-align: center;
-      }
-
-      #tabelaProdutos th:nth-child(4), 
-      #tabelaProdutos td:nth-child(4) {
-        width: 8%;
-        text-align: center;
-      }
-
-      #tabelaProdutos th:nth-child(5), 
-      #tabelaProdutos td:nth-child(5) {
-        width: 12%;
-        text-align: right;
-      }
-
-      #tabelaProdutos th:nth-child(6), 
-      #tabelaProdutos td:nth-child(6) {
-        width: 11%;
-        text-align: right;
-        font-weight: bold;
-      }
-
-      #tabelaProdutos th:nth-child(7), 
-      #tabelaProdutos td:nth-child(7) {
-        width: 12%;
-        text-align: center;
-      }
-
-      .table-input {
-        border: none;
-        background: transparent;
-        padding: 1px 2px;
-        height: 16px;
-      }
-
-      /* ===== TOTAIS - COMPACTOS ===== */
-      .total-section {
-        background: #e8f5e8;
-        padding: 6px 8px;
-        border-radius: 0;
-        margin: 6px 0;
-        text-align: right;
-        border: 1px solid #27ae60;
-      }
-
-      .total-line {
-        font-size: 10px;
-        margin: 2px 0;
-        font-weight: bold;
-        line-height: 1;
-      }
-
-      .total-final {
-        font-size: 12px;
-        color: #27ae60;
-        border-top: 1px solid #27ae60;
-        padding-top: 3px;
-        margin-top: 4px;
-        font-weight: bold;
-        line-height: 1.1;
-      }
-
-      /* ===== PAGAMENTO - ULTRA COMPACTO ===== */
-      .payment-section {
-        display: block;
-        margin-top: 6px;
-      }
-
-      .payment-section .form-group {
-        display: inline-block;
-        width: 23%;
-        vertical-align: top;
-        margin: 0 0 3px 0;
-      }
-
-      .payment-section .form-group:nth-child(4) {
-        width: 31%;
-      }
-
-      .payment-section input,
-      .payment-section select {
-        padding: 2px 3px;
-        font-size: 9px;
-        height: 18px;
-      }
-
-      .payment-section label {
-        font-size: 8px;
-        margin-bottom: 1px;
-      }
-
-      /* ===== OBSERVAÇÕES - REDUZIDA ===== */
-      #observacoes {
-        min-height: 40px;
-        max-height: 60px;
-        font-size: 9px;
-        line-height: 1.1;
-      }
-
-      /* ===== ASSINATURAS - COMPACTAS ===== */
-      .signature-section {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 15px;
-        padding-top: 8px;
-        border-top: 1px solid #333;
-        page-break-inside: avoid;
-      }
-
-      .signature-box {
-        flex: 1;
-        text-align: center;
-        margin: 0 8px;
-      }
-
-      .signature-box p {
-        font-size: 9px;
-        margin: 1px 0;
-        line-height: 1;
-      }
-
-      .signature-line {
-        border-bottom: 1px solid #333;
-        height: 20px;
-        margin: 3px 0;
-      }
-
-      /* ===== RODAPÉ COM METADADOS ===== */
-      .print-footer {
-        display: block;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-size: 7px;
-        color: #666;
-        padding: 3px 0;
-        border-top: 1px solid #ddd;
-      }
-
-      /* ===== CORES E AJUSTES FINAIS ===== */
-      * {
-        -webkit-print-color-adjust: exact;
-        color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      /* ===== RESPONSIVO PARA IMPRESSÃO MOBILE ===== */
-      @media print and (max-width: 600px) {
-        .payment-section .form-group {
-          width: 100%;
-          display: block;
-          margin-bottom: 3px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ordem de Serviço - IOIT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        .signature-section {
-          flex-direction: column;
-        }
-
-        .signature-box {
-          margin: 3px 0;
-        }
-
+        
         body {
-          font-size: 8px;
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            line-height: 1.4;
+        }
+
+        /* TELA DE LOGIN */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-box h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .login-box .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-box label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-box button:hover {
+            background: #5a67d8;
+        }
+
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+        }
+
+        .container.show {
+            display: block;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header .user-info {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .nav-menu {
+            background: #34495e;
+            padding: 15px 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: #5a67d8;
+        }
+
+        .nav-btn-logout {
+            background: #e74c3c;
+            margin-left: auto;
+        }
+
+        .nav-btn-logout:hover {
+            background: #c0392b;
+        }
+
+        .content-area {
+            padding: 30px;
+            min-height: 70vh;
+        }
+
+        /* FORMULÁRIOS */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        /* NOVA ORDEM DE SERVIÇO */
+        .os-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .os-header {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .os-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .os-date {
+            font-size: 1.2em;
+            color: #7f8c8d;
+        }
+
+        .section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 5px;
+        }
+
+        .cliente-select {
+            position: relative;
+        }
+
+        .cliente-select input {
+            width: calc(100% - 100px);
+            display: inline-block;
+        }
+
+        .cliente-select button {
+            width: 90px;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .client-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .client-details.show {
+            display: block;
+        }
+
+        .client-details p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
         }
 
         th, td {
-          padding: 1px 2px;
-          font-size: 7px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
         }
-      }
-    }
-  </style>
+
+        th {
+            background: #34495e;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .table-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .table-input:focus {
+            outline: 2px solid #667eea;
+            background: white;
+        }
+
+        /* Campos de moeda com formatação */
+        .valor-unitario {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #27ae60;
+            text-align: right;
+        }
+
+        .total-section {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .total-line {
+            font-size: 1.1em;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .total-final {
+            font-size: 1.5em;
+            color: #27ae60;
+            border-top: 2px solid #27ae60;
+            padding-top: 10px;
+            margin-top: 15px;
+        }
+
+        .payment-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 2fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .payment-section input, .payment-section select {
+            padding: 10px;
+        }
+
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+
+        .signature-box {
+            flex: 1;
+            text-align: center;
+            margin: 0 20px;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #333;
+            height: 50px;
+            margin: 10px 0;
+        }
+
+        /* LISTA DE OS E CLIENTES */
+        .client-list, .os-list {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .client-item, .os-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .client-info, .os-details {
+            flex: 1;
+        }
+
+        .client-info h3, .os-details h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .client-info p, .os-meta {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        .os-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .print-btn {
+            background: #f39c12;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media print {
+            .nav-menu, .btn, .nav-btn-logout {
+                display: none !important;
+            }
+            
+            .content-area {
+                padding: 0;
+            }
+            
+            .os-container {
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 15px;
+            }
+            
+            .payment-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .signature-section {
+                flex-direction: column;
+            }
+            
+            .client-item, .os-item {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- ===== TELA DE LOGIN ===== -->
-  <div class="login-container" id="loginContainer">
-    <div class="login-box">
-      <div class="login-header">
-        <h1>🔧 Sistema de OS</h1>
-        <p>Faça login para continuar</p>
-      </div>
-      
-      <form class="login-form" id="loginForm">
-        <div class="form-field">
-          <label for="username">Usuário</label>
-          <input 
-            type="text" 
-            id="username" 
-            name="username" 
-            placeholder="Digite seu usuário"
-            required
-            autocomplete="username"
-          >
+    <!-- TELA DE LOGIN -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h1>🔧 IOIT - Sistema de OS</h1>
+            <div class="error-message" id="errorMessage">
+                Usuário ou senha incorretos!
+            </div>
+            <form id="loginForm" onsubmit="fazerLogin(event)">
+                <div class="input-group">
+                    <label for="username">👤 Usuário:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">🔑 Senha:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit">Entrar no Sistema</button>
+            </form>
         </div>
-        
-        <div class="form-field">
-          <label for="password">Senha</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="Digite sua senha"
-            required
-            autocomplete="current-password"
-          >
-        </div>
-        
-        <div id="loginError" class="login-error" style="display: none;"></div>
-        
-        <button type="submit" class="login-btn">Entrar</button>
-      </form>
-      
-      <div class="login-footer">
-        <p>© 2025 Sistema de Ordem de Serviço</p>
-        <p style="margin-top: 10px; font-size: 11px; color: #7f8c8d;">
-          <strong>Usuário:</strong> admin | <strong>Senha:</strong> admin123
-        </p>
-      </div>
     </div>
-  </div>
 
-  <!-- ===== CONTEÚDO PRINCIPAL (oculto até login) ===== -->
-  <div id="mainContent" style="display: none;">
-    <div class="container">
-      <!-- MENU DE NAVEGAÇÃO -->
-      <div class="nav-menu">
-        <h2>📋 Sistema de Ordem de Serviço</h2>
-        <button class="nav-btn-logout" onclick="logout()">🚪 Sair</button>
-      </div>
-
-      <!-- ÁREA DE CONTEÚDO -->
-      <div class="content-area">
-        <div class="os-container">
-          <!-- HEADER DA OS -->
-          <div class="os-header">
-            <div class="os-number">OS #<span id="osNumber">00001</span></div>
-            <div class="os-date">Data: <span id="osDate"></span></div>
-          </div>
-
-          <!-- SEÇÃO: DADOS DO CLIENTE -->
-          <div class="section">
-            <h2>👤 Dados do Cliente</h2>
-            <div class="cliente-select">
-              <div class="form-group">
-                <label for="clienteNome">Nome do Cliente</label>
-                <input type="text" id="clienteNome" placeholder="Digite o nome do cliente">
-              </div>
-            </div>
-            <div class="client-details">
-              <p><strong>Telefone:</strong> <input type="tel" id="clienteTelefone" placeholder="(00) 00000-0000" style="border: none; background: transparent; width: 200px;"></p>
-              <p><strong>Email:</strong> <input type="email" id="clienteEmail" placeholder="email@exemplo.com" style="border: none; background: transparent; width: 300px;"></p>
-              <p><strong>Endereço:</strong> <input type="text" id="clienteEndereco" placeholder="Rua, número, bairro" style="border: none; background: transparent; width: 100%;"></p>
-            </div>
-          </div>
-
-          <!-- SEÇÃO: EQUIPAMENTO -->
-          <div class="section">
-            <h2>🖥️ Equipamento</h2>
-            <div class="form-group">
-              <label for="equipamento">Tipo de Equipamento</label>
-              <input type="text" id="equipamento" placeholder="Ex: Notebook Dell Inspiron 15">
-            </div>
-            <div class="form-group">
-              <label for="numeroSerie">Número de Série</label>
-              <input type="text" id="numeroSerie" placeholder="Ex: SN123456789">
-            </div>
-            <div class="form-group">
-              <label for="defeito">Defeito Relatado</label>
-              <textarea id="defeito" placeholder="Descreva o problema relatado pelo cliente"></textarea>
-            </div>
-          </div>
-
-          <!-- SEÇÃO: SERVIÇOS -->
-          <div class="section">
-            <h2>🔧 Serviços</h2>
-            <div class="table-container">
-              <table id="tabelaServicos">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Descrição do Serviço</th>
-                    <th>Qtd</th>
-                    <th>Valor Unit.</th>
-                    <th>Subtotal</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="servicosBody">
-                  <tr>
-                    <td style="text-align: center;">1</td>
-                    <td><input type="text" class="table-input" placeholder="Ex: Formatação e instalação do Windows"></td>
-                    <td><input type="number" class="table-input" value="1" min="1" style="text-align: center;"></td>
-                    <td><input type="text" class="table-input" placeholder="R$ 0,00" style="text-align: right;"></td>
-                    <td style="text-align: right; font-weight: bold;">R$ 0,00</td>
-                    <td style="text-align: center;"><button class="btn btn-remove" onclick="removerLinha(this)">✕</button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <button class="btn btn-add" onclick="adicionarServico()">➕ Adicionar Serviço</button>
-          </div>
-
-          <!-- SEÇÃO: PRODUTOS/PEÇAS -->
-          <div class="section">
-            <h2>📦 Produtos/Peças</h2>
-            <div class="table-container">
-              <table id="tabelaProdutos">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Descrição do Produto</th>
-                    <th>Qtd</th>
-                    <th>Unid.</th>
-                    <th>Valor Unit.</th>
-                    <th>Subtotal</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="produtosBody">
-                  <tr>
-                    <td style="text-align: center;">1</td>
-                    <td><input type="text" class="table-input" placeholder="Ex: Memória RAM 8GB DDR4"></td>
-                    <td><input type="number" class="table-input" value="1" min="1" style="text-align: center;"></td>
-                    <td><input type="text" class="table-input" value="UN" style="text-align: center;"></td>
-                    <td><input type="text" class="table-input" placeholder="R$ 0,00" style="text-align: right;"></td>
-                    <td style="text-align: right; font-weight: bold;">R$ 0,00</td>
-                    <td style="text-align: center;"><button class="btn btn-remove" onclick="removerLinha(this)">✕</button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <button class="btn btn-add" onclick="adicionarProduto()">➕ Adicionar Produto</button>
-          </div>
-
-          <!-- SEÇÃO: TOTAIS -->
-          <div class="total-section">
-            <div class="total-line">Subtotal Serviços: <span id="subtotalServicos">R$ 0,00</span></div>
-            <div class="total-line">Subtotal Produtos: <span id="subtotalProdutos">R$ 0,00</span></div>
-            <div class="total-final">TOTAL GERAL: <span id="totalGeral">R$ 0,00</span></div>
-          </div>
-
-          <!-- SEÇÃO: PAGAMENTO -->
-          <div class="section">
-            <h2>💳 Forma de Pagamento</h2>
-            <div class="payment-section">
-              <div class="form-group">
-                <label for="formaPagamento">Forma de Pagamento</label>
-                <select id="formaPagamento">
-                  <option value="">Selecione...</option>
-                  <option value="dinheiro">Dinheiro</option>
-                  <option value="pix">PIX</option>
-                  <option value="debito">Cartão de Débito</option>
-                  <option value="credito">Cartão de Crédito</option>
-                  <option value="transferencia">Transferência</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="parcelas">Parcelas</label>
-                <input type="number" id="parcelas" value="1" min="1">
-              </div>
-              <div class="form-group">
-                <label for="entrada">Entrada</label>
-                <input type="text" id="entrada" placeholder="R$ 0,00">
-              </div>
-              <div class="form-group">
-                <label for="dataVencimento">Data de Vencimento</label>
-                <input type="date" id="dataVencimento">
-              </div>
-            </div>
-          </div>
-
-          <!-- SEÇÃO: OBSERVAÇÕES -->
-          <div class="section">
-            <h2>📝 Observações</h2>
-            <div class="form-group">
-              <textarea id="observacoes" placeholder="Observações adicionais sobre o serviço..."></textarea>
-            </div>
-          </div>
-
-          <!-- SEÇÃO: ASSINATURAS -->
-          <div class="signature-section">
-            <div class="signature-box">
-              <div class="signature-line"></div>
-              <p><strong>Assinatura do Cliente</strong></p>
-              <p>CPF: ___________________</p>
-            </div>
-            <div class="signature-box">
-              <div class="signature-line"></div>
-              <p><strong>Assinatura do Técnico</strong></p>
-              <p>Data: ___/___/______</p>
-            </div>
-          </div>
-
-          <!-- AÇÕES DA OS -->
-          <div class="os-actions">
-            <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir OS</button>
-            <button class="btn btn-secondary" onclick="salvarOS()">💾 Salvar OS</button>
-            <button class="btn btn-secondary" onclick="novaOS()">📄 Nova OS</button>
-          </div>
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <h1>🔧 IOIT - Ordem de Serviço</h1>
+            <div class="user-info" id="userInfo">👤 Carregando...</div>
         </div>
-      </div>
+
+        <div class="nav-menu">
+            <button class="nav-btn active" onclick="mostrarNovaOS()">➕ Nova OS</button>
+            <button class="nav-btn" onclick="mostrarClientes()">👥 Clientes</button>
+            <button class="nav-btn" onclick="mostrarListaOS()">📋 Listar OS</button>
+            <button class="nav-btn-logout" onclick="fazerLogout()">🚪 Sair</button>
+        </div>
+
+        <div class="content-area">
+            <!-- NOVA ORDEM DE SERVIÇO -->
+            <div id="novaOS" class="os-container">
+                <div class="os-header">
+                    <div class="os-number">OS Nº <span id="numeroOS">000</span></div>
+                    <div class="os-date">Data: <span id="dataAtual"></span></div>
+                </div>
+
+                <div class="section">
+                    <h2>👤 DADOS DO CLIENTE</h2>
+                    <div class="cliente-select">
+                        <input type="text" id="clienteBusca" placeholder="Digite o nome do cliente ou CPF..." oninput="buscarCliente()" list="clientesLista">
+                        <datalist id="clientesLista"></datalist>
+                        <button class="btn btn-secondary" onclick="selecionarClienteManual()">➕ Novo Cliente</button>
+                    </div>
+                    <div class="client-details" id="clientDetails">
+                        <p><strong>Nome:</strong> <span id="clienteNome"></span></p>
+                        <p><strong>CPF:</strong> <span id="clienteCPF"></span></p>
+                        <p><strong>Endereço:</strong> <span id="clienteEndereco"></span></p>
+                        <p><strong>Telefone:</strong> <span id="clienteTelefone"></span></p>
+                        <p><strong>Email:</strong> <span id="clienteEmail"></span></p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>💻 EQUIPAMENTO</h2>
+                    <div class="form-group">
+                        <label>Nome do Equipamento:</label>
+                        <input type="text" id="equipamentoNome" placeholder="Ex: Notebook Lenovo Yoga">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label>Marca:</label>
+                            <input type="text" id="equipamentoMarca" placeholder="Ex: Lenovo">
+                        </div>
+                        <div class="form-group">
+                            <label>Modelo:</label>
+                            <input type="text" id="equipamentoModelo" placeholder="Ex: Yoga 7Gen">
+                        </div>
+                        <div class="form-group">
+                            <label>Série:</label>
+                            <input type="text" id="equipamentoSerie" placeholder="Número de série">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Defeitos Relatados:</label>
+                        <textarea id="defeitos" rows="3" placeholder="Descreva o problema relatado pelo cliente..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Solução Aplicada:</label>
+                        <textarea id="solucao" rows="3" placeholder="Descreva o que foi feito para resolver..."></textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>🔧 SERVIÇOS</h2>
+                    <div class="table-container">
+                        <table id="tabelaServicos">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Nome do Serviço</th>
+                                    <th>Qtd</th>
+                                    <th>Vr. Unit. (R$)</th>
+                                    <th>Subtotal (R$)</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="linha-servico">
+                                    <td>1</td>
+                                    <td><input type="text" class="table-input servico-nome" placeholder="Ex: Prestação de Serviços em T.I"></td>
+                                    <td><input type="number" class="table-input servico-qtd" value="1" min="1" style="width: 60px;"></td>
+                                    <td><input type="text" class="table-input servico-valor valor-unitario" placeholder="0,00" style="width: 100px;"></td>
+                                    <td class="subtotal-servico">R$ 0,00</td>
+                                    <td><button class="btn btn-danger remover-linha" onclick="removerLinha(this)" style="padding: 5px 10px; font-size: 12px;">🗑️</button></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3"><strong>TOTAL SERVIÇOS:</strong></td>
+                                    <td id="totalServicos" colspan="2">R$ 0,00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <button class="btn btn-success" onclick="adicionarLinha('servico')" style="margin-top: 10px;">➕ Adicionar Serviço</button>
+                </div>
+
+                <div class="section">
+                    <h2>📦 PRODUTOS</h2>
+                    <div class="table-container">
+                        <table id="tabelaProdutos">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Nome do Produto</th>
+                                    <th>Unidade</th>
+                                    <th>Qtd</th>
+                                    <th>Vr. Unit. (R$)</th>
+                                    <th>Subtotal (R$)</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="linha-produto">
+                                    <td>1</td>
+                                    <td><input type="text" class="table-input produto-nome" placeholder="Ex: HD SSD 480GB Crucial"></td>
+                                    <td><input type="text" class="table-input produto-und" value="UN" style="width: 60px;"></td>
+                                    <td><input type="number" class="table-input produto-qtd" value="1" min="1" style="width: 60px;"></td>
+                                    <td><input type="text" class="table-input produto-valor valor-unitario" placeholder="0,00" style="width: 100px;"></td>
+                                    <td class="subtotal-produto">R$ 0,00</td>
+                                    <td><button class="btn btn-danger remover-linha" onclick="removerLinha(this)" style="padding: 5px 10px; font-size: 12px;">🗑️</button></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4"><strong>TOTAL PRODUTOS:</strong></td>
+                                    <td id="totalProdutos" colspan="2">R$ 0,00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <button class="btn btn-success" onclick="adicionarLinha('produto')" style="margin-top: 10px;">➕ Adicionar Produto</button>
+                </div>
+
+                <div class="total-section">
+                    <div class="total-line"><strong>PRODUTOS:</strong> R$ <span id="displayTotalProdutos">0,00</span></div>
+                    <div class="total-line"><strong>SERVIÇOS:</strong> R$ <span id="displayTotalServicos">0,00</span></div>
+                    <div class="total-line" id="saldoLine" style="display: none;"><strong>ENTRADA:</strong> R$ <span id="displayEntrada">0,00</span></div>
+                    <div class="total-line" id="restanteLine" style="display: none; color: #e74c3c;"><strong>SALDO A PAGAR:</strong> R$ <span id="displaySaldo">0,00</span></div>
+                    <div class="total-final"><strong>TOTAL: R$ <span id="totalGeral">0,00</span></strong></div>
+                </div>
+
+                <div class="section">
+                    <h2>💳 DADOS DO PAGAMENTO</h2>
+                    <div class="payment-section">
+                        <div class="form-group">
+                            <label>Vencimento:</label>
+                            <input type="date" id="vencimento">
+                        </div>
+                        <div class="form-group">
+                            <label>Entrada (R$):</label>
+                            <input type="text" id="entrada" class="valor-unitario" placeholder="0,00" style="text-align: right;">
+                        </div>
+                        <div class="form-group">
+                            <label>Forma de Pagamento:</label>
+                            <select id="formaPagamento">
+                                <option value="">Selecione...</option>
+                                <option value="PIX">PIX</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão">Cartão</option>
+                                <option value="Boleto">Boleto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Observação:</label>
+                            <input type="text" id="pagamentoObs" placeholder="Ex: Garantia de 3 anos">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>📝 OBSERVAÇÕES</h2>
+                    <div class="form-group">
+                        <textarea id="observacoes" rows="4" placeholder="Observações adicionais, dados bancários, etc..."></textarea>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="salvarOSCompleta()" style="font-size: 18px; padding: 15px 30px;">💾 SALVAR ORDEM DE SERVIÇO</button>
+                    <button class="btn btn-secondary print-btn" onclick="imprimirOS()" style="font-size: 18px; padding: 15px 30px; margin-left: 10px;">🖨️ IMPRIMIR OS</button>
+                    <button class="btn btn-danger" onclick="cancelarOS()" style="font-size: 18px; padding: 15px 30px; margin-left: 10px;">❌ CANCELAR</button>
+                </div>
+
+                <div class="signature-section">
+                    <div class="signature-box">
+                        <p>Fernando Saturnino da Silva</p>
+                        <div class="signature-line"></div>
+                        <p>Assinatura do Técnico</p>
+                    </div>
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <p>Assinatura do Cliente</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CADASTRO DE CLIENTES -->
+            <div id="clientes" style="display: none;">
+                <div class="client-list">
+                    <h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">👥 CADASTRO DE CLIENTES</h2>
+                    
+                    <div style="max-width: 600px; margin: 0 auto 30px;">
+                        <div class="form-group">
+                            <label for="novoClienteNome">Nome Completo:</label>
+                            <input type="text" id="novoClienteNome" placeholder="Nome do cliente">
+                        </div>
+                        <div class="form-group">
+                            <label for="novoClienteCPF">CPF/CNPJ:</label>
+                            <input type="text" id="novoClienteCPF" placeholder="Ex: 123.456.789-00">
+                        </div>
+                        <div class="form-group">
+                            <label for="novoClienteEndereco">Endereço:</label>
+                            <input type="text" id="novoClienteEndereco" placeholder="Rua, número, bairro">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px;">
+                            <div class="form-group">
+                                <label for="novoClienteCidade">Cidade:</label>
+                                <input type="text" id="novoClienteCidade" placeholder="São Paulo">
+                            </div>
+                            <div class="form-group">
+                                <label for="novoClienteCEP">CEP:</label>
+                                <input type="text" id="novoClienteCEP" placeholder="01234-567">
+                            </div>
+                            <div class="form-group">
+                                <label for="novoClienteEstado">Estado:</label>
+                                <select id="novoClienteEstado">
+                                    <option value="SP">SP</option>
+                                    <option value="RJ">RJ</option>
+                                    <option value="MG">MG</option>
+                                    <option value="RS">RS</option>
+                                    <option value="PR">PR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="form-group">
+                                <label for="novoClienteTelefone">Telefone:</label>
+                                <input type="text" id="novoClienteTelefone" placeholder="(11) 99999-9999">
+                            </div>
+                            <div class="form-group">
+                                <label for="novoClienteEmail">E-mail:</label>
+                                <input type="email" id="novoClienteEmail" placeholder="cliente@email.com">
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0;">
+                            <button class="btn btn-primary" onclick="salvarCliente()" style="font-size: 18px; padding: 15px 30px;">💾 SALVAR CLIENTE</button>
+                            <button class="btn btn-secondary" onclick="limparFormularioCliente()" style="font-size: 18px; padding: 15px 30px; margin-left: 10px;">🆕 NOVO</button>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #2c3e50; margin-bottom: 20px;">👥 CLIENTES CADASTRADOS</h3>
+                    <div id="listaClientes" class="loading">Carregando clientes...</div>
+                </div>
+            </div>
+
+            <!-- LISTA DE OS -->
+            <div id="listaOS" style="display: none;">
+                <div class="os-list">
+                    <h2 style="text-align: center; margin-bottom: 30px; color: #2c3e50;">📋 ORDENS DE SERVIÇO</h2>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="buscaOS" placeholder="Buscar por número, cliente ou data..." oninput="buscarOS()">
+                        <select id="filtroStatus" oninput="buscarOS()" style="padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+                            <option value="">Todos os Status</option>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Pago">Pago</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="buscarOS()" style="padding: 10px 20px;">🔍 Buscar</button>
+                        <button class="btn btn-success" onclick="novaOS()" style="padding: 10px 20px;">➕ Nova OS</button>
+                    </div>
+
+                    <div id="listaOrdens" class="loading">Carregando ordens de serviço...</div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- RODAPÉ DE IMPRESSÃO -->
-  <div class="print-footer">
-    Impresso em: <span id="printDate"></span> | OS gerada por: Sistema de Ordem de Serviço
-  </div>
-
-  <script>
-    // ===== SISTEMA DE LOGIN =====
-    const CREDENTIALS = {
-      username: 'admin',
-      password: 'admin123'
-    };
-
-    const loginContainer = document.getElementById('loginContainer');
-    const mainContent = document.getElementById('mainContent');
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-
-    // Verifica se já está logado
-    window.addEventListener('DOMContentLoaded', () => {
-      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-      
-      if (isLoggedIn === 'true') {
-        showMainContent();
-      }
-
-      // Inicializa data da OS
-      document.getElementById('osDate').textContent = new Date().toLocaleDateString('pt-BR');
-    });
-
-    // Processa o login
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      
-      if (username === CREDENTIALS.username && password === CREDENTIALS.password) {
-        sessionStorage.setItem('isLoggedIn', 'true');
-        sessionStorage.setItem('username', username);
-        showMainContent();
-      } else {
-        showError('Usuário ou senha incorretos!');
-      }
-    });
-
-    function showMainContent() {
-      loginContainer.style.display = 'none';
-      mainContent.style.display = 'block';
-    }
-
-    function showError(message) {
-      loginError.textContent = message;
-      loginError.style.display = 'block';
-      
-      setTimeout(() => {
-        loginError.style.display = 'none';
-      }, 3000);
-    }
-
-    function logout() {
-      sessionStorage.removeItem('isLoggedIn');
-      sessionStorage.removeItem('username');
-      location.reload();
-    }
-
-    // Previne acesso direto ao conteúdo
-    setInterval(() => {
-      const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-      if (isLoggedIn !== 'true' && mainContent.style.display !== 'none') {
-        location.reload();
-      }
-    }, 5000);
-
-    // ===== FUNÇÕES DA OS =====
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
-    // Atualiza data de impressão
-    window.addEventListener('beforeprint', () => {
-      document.getElementById('printDate').textContent = 
-        new Date().toLocaleString('pt-BR');
-    });
+    <script>
+        // ===== CONFIGURAÇÃO DO FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnBBc_2-RI2H07TEd8H8u6OZcWRZ5n5uY",
+            authDomain: "os-ioit.firebaseapp.com",
+            projectId: "os-ioit",
+            storageBucket: "os-ioit.firebasestorage.app",
+            messagingSenderId: "508837030553",
+            appId: "1:508837030553:web:52a80e098b44b76f05e608",
+            measurementId: "G-2QGTD33DPQ"
+        };
 
-    // Adicionar serviço
-    function adicionarServico() {
-      const tbody = document.getElementById('servicosBody');
-      const novaLinha = tbody.rows[0].cloneNode(true);
-      const numeroItem = tbody.rows.length + 1;
-      
-      novaLinha.cells[0].textContent = numeroItem;
-      novaLinha.querySelectorAll('input').forEach(input => input.value = input.type === 'number' ? '1' : '');
-      novaLinha.cells[4].textContent = 'R$ 0,00';
-      
-      tbody.appendChild(novaLinha);
-    }
-
-    // Adicionar produto
-    function adicionarProduto() {
-      const tbody = document.getElementById('produtosBody');
-      const novaLinha = tbody.rows[0].cloneNode(true);
-      const numeroItem = tbody.rows.length + 1;
-      
-      novaLinha.cells[0].textContent = numeroItem;
-      novaLinha.querySelectorAll('input').forEach(input => {
-        if (input.value === 'UN') return;
-        input.value = input.type === 'number' ? '1' : '';
-      });
-      novaLinha.cells[5].textContent = 'R$ 0,00';
-      
-      tbody.appendChild(novaLinha);
-    }
-
-    // Remover linha
-    function removerLinha(btn) {
-      const row = btn.closest('tr');
-      const tbody = row.parentElement;
-      
-      if (tbody.rows.length > 1) {
-        row.remove();
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
         
-        // Renumera os itens
-        Array.from(tbody.rows).forEach((row, index) => {
-          row.cells[0].textContent = index + 1;
+        // ===== VARIÁVEIS GLOBAIS =====
+        let usuarioAtual = null;
+        let clientes = [];
+        let ordens = [];
+        let proximoNumeroOS = 1;
+        let osAtual = null;
+
+        // ===== SISTEMA DE LOGIN =====
+        const usuarios = {
+            'admin': 'admin123',
+            'fernando': 'senha123',
+            'tecnico': 'tecnico2024'
+        };
+
+        function fazerLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (usuarios[username] && usuarios[username] === password) {
+                usuarioAtual = username;
+                sessionStorage.setItem('usuarioLogado', username);
+                document.getElementById('userInfo').textContent = `👤 Usuário: ${username}`;
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').classList.add('show');
+                inicializarSistema();
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        function fazerLogout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                sessionStorage.removeItem('usuarioLogado');
+                location.reload();
+            }
+        }
+
+        function verificarLogin() {
+            const usuarioLogado = sessionStorage.getItem('usuarioLogado');
+            
+            if (usuarioLogado) {
+                usuarioAtual = usuarioLogado;
+                document.getElementById('userInfo').textContent = `👤 Usuário: ${usuarioLogado}`;
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').classList.add('show');
+                inicializarSistema();
+            } else {
+                document.getElementById('loginContainer').style.display = 'flex';
+            }
+        }
+
+        // ===== INICIALIZAÇÃO DO SISTEMA =====
+        function inicializarSistema() {
+            carregarProximoNumeroOS();
+            carregarClientes();
+            carregarOrdens();
+            atualizarDataAtual();
+            mostrarNovaOS();
+            inicializarFormatacaoMoeda();
+        }
+
+        function atualizarDataAtual() {
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const ano = hoje.getFullYear();
+            document.getElementById('dataAtual').textContent = `${dia}/${mes}/${ano}`;
+        }
+
+        // ===== SISTEMA DE FORMATAÇÃO DE MOEDA =====
+        function formatarMoeda(valor) {
+            return parseFloat(valor || 0).toFixed(2).replace('.', ',');
+        }
+
+        function parseMoeda(str) {
+            if (!str) return 0;
+            return parseFloat(str.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+        }
+
+        function formatarInputMoeda(input) {
+            let valor = input.value.replace(/[^\d]/g, '');
+            
+            if (valor === '') {
+                input.value = '0,00';
+                return;
+            }
+            
+            valor = parseInt(valor).toString();
+            
+            while (valor.length < 3) {
+                valor = '0' + valor;
+            }
+            
+            const parteInteira = valor.slice(0, -2);
+            const parteDecimal = valor.slice(-2);
+            
+            input.value = parteInteira + ',' + parteDecimal;
+        }
+
+        function inicializarFormatacaoMoeda() {
+            // Inicializa campos de valor unitário
+            document.querySelectorAll('.valor-unitario').forEach(input => {
+                input.value = '0,00';
+                
+                input.addEventListener('input', function() {
+                    formatarInputMoeda(this);
+                    calcularTotais();
+                });
+                
+                input.addEventListener('focus', function() {
+                    if (this.value === '0,00') {
+                        this.value = '';
+                    }
+                });
+                
+                input.addEventListener('blur', function() {
+                    if (this.value === '') {
+                        this.value = '0,00';
+                    }
+                    calcularTotais();
+                });
+            });
+            
+            // Inicializa campo de entrada
+            const entradaInput = document.getElementById('entrada');
+            entradaInput.value = '0,00';
+            
+            entradaInput.addEventListener('input', function() {
+                formatarInputMoeda(this);
+                calcularTotais();
+            });
+            
+            entradaInput.addEventListener('focus', function() {
+                if (this.value === '0,00') {
+                    this.value = '';
+                }
+            });
+            
+            entradaInput.addEventListener('blur', function() {
+                if (this.value === '') {
+                    this.value = '0,00';
+                }
+                calcularTotais();
+            });
+        }
+
+        // ===== NAVEGAÇÃO ENTRE TELAS =====
+        function mostrarNovaOS() {
+            document.getElementById('novaOS').style.display = 'block';
+            document.getElementById('clientes').style.display = 'none';
+            document.getElementById('listaOS').style.display = 'none';
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            limparFormularioOS();
+            carregarProximoNumeroOS();
+        }
+
+        function mostrarClientes() {
+            document.getElementById('novaOS').style.display = 'none';
+            document.getElementById('clientes').style.display = 'block';
+            document.getElementById('listaOS').style.display = 'none';
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            carregarClientes();
+        }
+
+        function mostrarListaOS() {
+            document.getElementById('novaOS').style.display = 'none';
+            document.getElementById('clientes').style.display = 'none';
+            document.getElementById('listaOS').style.display = 'block';
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            carregarOrdens();
+        }
+
+        // ===== FUNÇÕES DE CLIENTES =====
+        function salvarCliente() {
+            const nome = document.getElementById('novoClienteNome').value.trim();
+            const cpf = document.getElementById('novoClienteCPF').value.trim();
+            const endereco = document.getElementById('novoClienteEndereco').value.trim();
+            const cidade = document.getElementById('novoClienteCidade').value.trim();
+            const cep = document.getElementById('novoClienteCEP').value.trim();
+            const estado = document.getElementById('novoClienteEstado').value;
+            const telefone = document.getElementById('novoClienteTelefone').value.trim();
+            const email = document.getElementById('novoClienteEmail').value.trim();
+
+            if (!nome || !cpf) {
+                alert('⚠️ Nome e CPF/CNPJ são obrigatórios!');
+                return;
+            }
+
+            const cliente = {
+                id: Date.now(),
+                nome: nome,
+                cpf: cpf,
+                endereco: endereco,
+                cidade: cidade,
+                cep: cep,
+                estado: estado,
+                telefone: telefone,
+                email: email,
+                dataCadastro: new Date().toISOString()
+            };
+
+            database.ref('usuarios/' + usuarioAtual + '/clientes/' + cliente.id).set(cliente)
+                .then(() => {
+                    alert('✅ Cliente salvo com sucesso!');
+                    limparFormularioCliente();
+                    carregarClientes();
+                })
+                .catch((error) => {
+                    console.error('Erro ao salvar cliente:', error);
+                    alert('❌ Erro ao salvar cliente. Tente novamente.');
+                });
+        }
+
+        function carregarClientes() {
+            database.ref('usuarios/' + usuarioAtual + '/clientes').once('value')
+                .then((snapshot) => {
+                    clientes = [];
+                    const listaDiv = document.getElementById('listaClientes');
+                    const datalist = document.getElementById('clientesLista');
+                    
+                    listaDiv.innerHTML = '';
+                    datalist.innerHTML = '';
+
+                    if (!snapshot.exists()) {
+                        listaDiv.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Nenhum cliente cadastrado ainda.</p>';
+                        return;
+                    }
+
+                    snapshot.forEach((childSnapshot) => {
+                        const cliente = childSnapshot.val();
+                        clientes.push(cliente);
+
+                        const option = document.createElement('option');
+                        option.value = cliente.nome;
+                        datalist.appendChild(option);
+
+                        const clienteDiv = document.createElement('div');
+                        clienteDiv.className = 'client-item';
+                        clienteDiv.innerHTML = `
+                            <div class="client-info">
+                                <h3>${cliente.nome}</h3>
+                                <p><strong>CPF/CNPJ:</strong> ${cliente.cpf}</p>
+                                <p><strong>Telefone:</strong> ${cliente.telefone || 'Não informado'}</p>
+                                <p><strong>Endereço:</strong> ${cliente.endereco || 'Não informado'}</p>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary" onclick="editarCliente('${cliente.id}')">✏️ Editar</button>
+                                <button class="btn btn-danger" onclick="excluirCliente('${cliente.id}')">🗑️ Excluir</button>
+                            </div>
+                        `;
+                        listaDiv.appendChild(clienteDiv);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Erro ao carregar clientes:', error);
+                });
+        }
+
+        function editarCliente(id) {
+            const cliente = clientes.find(c => c.id == id);
+            if (!cliente) return;
+
+            document.getElementById('novoClienteNome').value = cliente.nome;
+            document.getElementById('novoClienteCPF').value = cliente.cpf;
+            document.getElementById('novoClienteEndereco').value = cliente.endereco;
+            document.getElementById('novoClienteCidade').value = cliente.cidade;
+            document.getElementById('novoClienteCEP').value = cliente.cep;
+            document.getElementById('novoClienteEstado').value = cliente.estado;
+            document.getElementById('novoClienteTelefone').value = cliente.telefone;
+            document.getElementById('novoClienteEmail').value = cliente.email;
+
+            window.scrollTo(0, 0);
+        }
+
+        function excluirCliente(id) {
+            if (!confirm('⚠️ Tem certeza que deseja excluir este cliente?')) return;
+
+            database.ref('usuarios/' + usuarioAtual + '/clientes/' + id).remove()
+                .then(() => {
+                    alert('✅ Cliente excluído com sucesso!');
+                    carregarClientes();
+                })
+                .catch((error) => {
+                    console.error('Erro ao excluir cliente:', error);
+                    alert('❌ Erro ao excluir cliente.');
+                });
+        }
+
+        function limparFormularioCliente() {
+            document.getElementById('novoClienteNome').value = '';
+            document.getElementById('novoClienteCPF').value = '';
+            document.getElementById('novoClienteEndereco').value = '';
+            document.getElementById('novoClienteCidade').value = '';
+            document.getElementById('novoClienteCEP').value = '';
+            document.getElementById('novoClienteEstado').value = 'SP';
+            document.getElementById('novoClienteTelefone').value = '';
+            document.getElementById('novoClienteEmail').value = '';
+        }
+
+        function buscarCliente() {
+            const busca = document.getElementById('clienteBusca').value.trim();
+            
+            if (busca.length < 3) {
+                document.getElementById('clientDetails').classList.remove('show');
+                return;
+            }
+
+            const clienteEncontrado = clientes.find(c => 
+                c.nome.toLowerCase().includes(busca.toLowerCase()) || 
+                c.cpf.includes(busca)
+            );
+
+            if (clienteEncontrado) {
+                document.getElementById('clienteNome').textContent = clienteEncontrado.nome;
+                document.getElementById('clienteCPF').textContent = clienteEncontrado.cpf;
+                document.getElementById('clienteEndereco').textContent = clienteEncontrado.endereco || 'Não informado';
+                document.getElementById('clienteTelefone').textContent = clienteEncontrado.telefone || 'Não informado';
+                document.getElementById('clienteEmail').textContent = clienteEncontrado.email || 'Não informado';
+                document.getElementById('clientDetails').classList.add('show');
+                osAtual = { ...osAtual, cliente: clienteEncontrado };
+            } else {
+                document.getElementById('clientDetails').classList.remove('show');
+            }
+        }
+
+        function selecionarClienteManual() {
+            mostrarClientes();
+        }
+
+        // ===== FUNÇÕES DE ORDEM DE SERVIÇO =====
+        function carregarProximoNumeroOS() {
+            database.ref('usuarios/' + usuarioAtual + '/configuracoes/proximaOS').once('value')
+                .then((snapshot) => {
+                    proximoNumeroOS = snapshot.val() || 1;
+                    document.getElementById('numeroOS').textContent = String(proximoNumeroOS).padStart(3, '0');
+                })
+                .catch((error) => {
+                    console.error('Erro ao carregar número da OS:', error);
+                });
+        }
+
+        function salvarOSCompleta() {
+            const clienteBusca = document.getElementById('clienteBusca').value.trim();
+            if (!clienteBusca) {
+                alert('⚠️ Selecione um cliente antes de salvar a OS!');
+                return;
+            }
+
+            const os = {
+                numero: proximoNumeroOS,
+                data: document.getElementById('dataAtual').textContent,
+                dataISO: new Date().toISOString(),
+                cliente: {
+                    nome: document.getElementById('clienteNome').textContent,
+                    cpf: document.getElementById('clienteCPF').textContent,
+                    endereco: document.getElementById('clienteEndereco').textContent,
+                    telefone: document.getElementById('clienteTelefone').textContent,
+                    email: document.getElementById('clienteEmail').textContent
+                },
+                equipamento: {
+                    nome: document.getElementById('equipamentoNome').value,
+                    marca: document.getElementById('equipamentoMarca').value,
+                    modelo: document.getElementById('equipamentoModelo').value,
+                    serie: document.getElementById('equipamentoSerie').value,
+                    defeitos: document.getElementById('defeitos').value,
+                    solucao: document.getElementById('solucao').value
+                },
+                servicos: coletarServicos(),
+                produtos: coletarProdutos(),
+                totais: {
+                    servicos: parseMoeda(document.getElementById('displayTotalServicos').textContent),
+                    produtos: parseMoeda(document.getElementById('displayTotalProdutos').textContent),
+                    total: parseMoeda(document.getElementById('totalGeral').textContent),
+                    entrada: parseMoeda(document.getElementById('entrada').value),
+                    saldo: parseMoeda(document.getElementById('displaySaldo').textContent)
+                },
+                pagamento: {
+                    vencimento: document.getElementById('vencimento').value,
+                    forma: document.getElementById('formaPagamento').value,
+                    observacao: document.getElementById('pagamentoObs').value
+                },
+                observacoes: document.getElementById('observacoes').value,
+                status: 'Pendente'
+            };
+
+            database.ref('usuarios/' + usuarioAtual + '/ordens/' + proximoNumeroOS).set(os)
+                .then(() => {
+                    return database.ref('usuarios/' + usuarioAtual + '/configuracoes/proximaOS').set(proximoNumeroOS + 1);
+                })
+                .then(() => {
+                    alert('✅ Ordem de Serviço Nº ' + proximoNumeroOS + ' salva com sucesso!');
+                    proximoNumeroOS++;
+                    limparFormularioOS();
+                    carregarProximoNumeroOS();
+                })
+                .catch((error) => {
+                    console.error('Erro ao salvar OS:', error);
+                    alert('❌ Erro ao salvar Ordem de Serviço. Tente novamente.');
+                });
+        }
+
+        function coletarServicos() {
+            const servicos = [];
+            const linhas = document.querySelectorAll('#tabelaServicos tbody tr');
+            
+            linhas.forEach((linha, index) => {
+                const nome = linha.querySelector('.servico-nome').value;
+                const qtd = parseFloat(linha.querySelector('.servico-qtd').value) || 0;
+                const valor = parseMoeda(linha.querySelector('.servico-valor').value);
+                
+                if (nome && qtd > 0 && valor > 0) {
+                    servicos.push({
+                        item: index + 1,
+                        nome: nome,
+                        quantidade: qtd,
+                        valorUnitario: valor,
+                        subtotal: qtd * valor
+                    });
+                }
+            });
+            
+            return servicos;
+        }
+
+        function coletarProdutos() {
+            const produtos = [];
+            const linhas = document.querySelectorAll('#tabelaProdutos tbody tr');
+            
+            linhas.forEach((linha, index) => {
+                const nome = linha.querySelector('.produto-nome').value;
+                const und = linha.querySelector('.produto-und').value;
+                const qtd = parseFloat(linha.querySelector('.produto-qtd').value) || 0;
+                const valor = parseMoeda(linha.querySelector('.produto-valor').value);
+                
+                if (nome && qtd > 0 && valor > 0) {
+                    produtos.push({
+                        item: index + 1,
+                        nome: nome,
+                        unidade: und,
+                        quantidade: qtd,
+                        valorUnitario: valor,
+                        subtotal: qtd * valor
+                    });
+                }
+            });
+            
+            return produtos;
+        }
+
+        function limparFormularioOS() {
+            document.getElementById('clienteBusca').value = '';
+            document.getElementById('clientDetails').classList.remove('show');
+            document.getElementById('equipamentoNome').value = '';
+            document.getElementById('equipamentoMarca').value = '';
+            document.getElementById('equipamentoModelo').value = '';
+            document.getElementById('equipamentoSerie').value = '';
+            document.getElementById('defeitos').value = '';
+            document.getElementById('solucao').value = '';
+            document.getElementById('vencimento').value = '';
+            document.getElementById('entrada').value = '0,00';
+            document.getElementById('formaPagamento').value = '';
+            document.getElementById('pagamentoObs').value = '';
+            document.getElementById('observacoes').value = '';
+            
+            document.querySelector('#tabelaServicos tbody').innerHTML = `
+                <tr class="linha-servico">
+                    <td>1</td>
+                    <td><input type="text" class="table-input servico-nome" placeholder="Ex: Prestação de Serviços em T.I"></td>
+                    <td><input type="number" class="table-input servico-qtd" value="1" min="1" style="width: 60px;"></td>
+                    <td><input type="text" class="table-input servico-valor valor-unitario" placeholder="0,00" style="width: 100px;"></td>
+                    <td class="subtotal-servico">R$ 0,00</td>
+                    <td><button class="btn btn-danger remover-linha" onclick="removerLinha(this)" style="padding: 5px 10px; font-size: 12px;">🗑️</button></td>
+                </tr>
+            `;
+            
+            document.querySelector('#tabelaProdutos tbody').innerHTML = `
+                <tr class="linha-produto">
+                    <td>1</td>
+                    <td><input type="text" class="table-input produto-nome" placeholder="Ex: HD SSD 480GB Crucial"></td>
+                    <td><input type="text" class="table-input produto-und" value="UN" style="width: 60px;"></td>
+                    <td><input type="number" class="table-input produto-qtd" value="1" min="1" style="width: 60px;"></td>
+                    <td><input type="text" class="table-input produto-valor valor-unitario" placeholder="0,00" style="width: 100px;"></td>
+                    <td class="subtotal-produto">R$ 0,00</td>
+                    <td><button class="btn btn-danger remover-linha" onclick="removerLinha(this)" style="padding: 5px 10px; font-size: 12px;">🗑️</button></td>
+                </tr>
+            `;
+            
+            inicializarFormatacaoMoeda();
+            calcularTotais();
+        }
+
+        function cancelarOS() {
+            if (confirm('⚠️ Tem certeza que deseja cancelar? Todos os dados serão perdidos.')) {
+                limparFormularioOS();
+            }
+        }
+
+        // ===== FUNÇÕES DE CÁLCULO =====
+        function calcularTotais() {
+            let totalServicos = 0;
+            let totalProdutos = 0;
+
+            // Calcular serviços
+            const linhasServicos = document.querySelectorAll('#tabelaServicos tbody tr');
+            linhasServicos.forEach((linha) => {
+                const qtd = parseFloat(linha.querySelector('.servico-qtd')?.value) || 0;
+                const valor = parseMoeda(linha.querySelector('.servico-valor')?.value || '0');
+                const subtotal = qtd * valor;
+                
+                const subtotalCell = linha.querySelector('.subtotal-servico');
+                if (subtotalCell) {
+                    subtotalCell.textContent = `R$ ${formatarMoeda(subtotal)}`;
+                }
+                
+                totalServicos += subtotal;
+            });
+
+            // Calcular produtos
+            const linhasProdutos = document.querySelectorAll('#tabelaProdutos tbody tr');
+            linhasProdutos.forEach((linha) => {
+                const qtd = parseFloat(linha.querySelector('.produto-qtd')?.value) || 0;
+                const valor = parseMoeda(linha.querySelector('.produto-valor')?.value || '0');
+                const subtotal = qtd * valor;
+                
+                const subtotalCell = linha.querySelector('.subtotal-produto');
+                if (subtotalCell) {
+                    subtotalCell.textContent = `R$ ${formatarMoeda(subtotal)}`;
+                }
+                
+                totalProdutos += subtotal;
+            });
+
+            // Atualizar totais
+            const totalGeral = totalServicos + totalProdutos;
+            const entrada = parseMoeda(document.getElementById('entrada')?.value || '0');
+            const saldo = totalGeral - entrada;
+
+            document.getElementById('totalServicos').textContent = `R$ ${formatarMoeda(totalServicos)}`;
+            document.getElementById('totalProdutos').textContent = `R$ ${formatarMoeda(totalProdutos)}`;
+            document.getElementById('displayTotalServicos').textContent = formatarMoeda(totalServicos);
+            document.getElementById('displayTotalProdutos').textContent = formatarMoeda(totalProdutos);
+            document.getElementById('totalGeral').textContent = formatarMoeda(totalGeral);
+            
+            // Mostrar/ocultar entrada e saldo
+            if (entrada > 0) {
+                document.getElementById('saldoLine').style.display = 'block';
+                document.getElementById('restanteLine').style.display = 'block';
+                document.getElementById('displayEntrada').textContent = formatarMoeda(entrada);
+                document.getElementById('displaySaldo').textContent = formatarMoeda(saldo);
+            } else {
+                document.getElementById('saldoLine').style.display = 'none';
+                document.getElementById('restanteLine').style.display = 'none';
+            }
+        }
+
+        function adicionarLinha(tipo) {
+            if (tipo === 'servico') {
+                const tbody = document.querySelector('#tabelaServicos tbody');
+                const numLinhas = tbody.querySelectorAll('tr').length + 1;
+                
+                const novaLinha = document.createElement('tr');
+                novaLinha.className = 'linha-servico';
+                novaLinha.innerHTML = `
+                    <td>${numLinhas}</td>
+                    <td><input type="text" class="table-input servico-nome" placeholder="Nome do serviço"></td>
+                    <td><input type="number" class="table-input servico-qtd" value="1" min="1" style="width: 60px;"></td>
+                    <td><input type="text" class="table-input servico-valor valor-unitario" placeholder="0,00" style="width: 100px;"></td>
+                    <td class="subtotal-servico">R$ 0,00</td>
+                    <td><button class="btn btn-danger remover-linha" onclick="removerLinha(this)" style="padding: 5px 10px; font-size: 12px;">🗑️</button></td>
+                `;
+                tbody.appendChild(novaLinha);
+            } else {
+                const tbody = document.querySelector('#tabelaProdutos tbody');
+                const numLinhas = tbody.querySelectorAll('tr').length + 1;
+                
+                const novaLinha = document.createElement('tr');
+                novaLinha.className = 'linha-produto';
+                novaLinha.innerHTML = `
+                    <td>${numLinhas}</td>
+                    <td><input type="text" class="table-input produto-nome" placeholder="Nome do produto"></td>
+                    <td><input type="text" class="table-input produto-und" value="UN" style="width: 60px;"></td>
+                    <td><input type="number" class="table-input produto-qtd" value="1" min="1" style="width: 60px;"></td>
+                    <td><input type="text" class="table-input produto-valor valor-unitario" placeholder="0,00" style="width: 100px;"></td>
+                    <td class="subtotal-produto">R$ 0,00</td>
+                    <td><button class="btn btn-danger remover-linha" onclick="removerLinha(this)" style="padding: 5px 10px; font-size: 12px;">🗑️</button></td>
+                `;
+                tbody.appendChild(novaLinha);
+            }
+            
+            inicializarFormatacaoMoeda();
+            calcularTotais();
+        }
+
+        function removerLinha(botao) {
+            const linha = botao.closest('tr');
+            const tbody = linha.parentElement;
+            
+            if (tbody.querySelectorAll('tr').length > 1) {
+                linha.remove();
+                
+                tbody.querySelectorAll('tr').forEach((tr, index) => {
+                    tr.querySelector('td:first-child').textContent = index + 1;
+                });
+                
+                calcularTotais();
+            } else {
+                alert('⚠️ Deve haver pelo menos uma linha!');
+            }
+        }
+
+        // ===== FUNÇÕES DE LISTA DE OS =====
+        function carregarOrdens() {
+            database.ref('usuarios/' + usuarioAtual + '/ordens').once('value')
+                .then((snapshot) => {
+                    ordens = [];
+                    const listaDiv = document.getElementById('listaOrdens');
+                    listaDiv.innerHTML = '';
+
+                    if (!snapshot.exists()) {
+                        listaDiv.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Nenhuma ordem de serviço cadastrada ainda.</p>';
+                        return;
+                    }
+
+                                        snapshot.forEach((childSnapshot) => {
+                        const ordem = childSnapshot.val();
+                        ordens.push(ordem);
+                    });
+
+                    // Ordenar por número decrescente
+                    ordens.sort((a, b) => b.numero - a.numero);
+
+                    ordens.forEach((ordem) => {
+                        const osDiv = document.createElement('div');
+                        osDiv.className = 'os-item';
+                        osDiv.innerHTML = `
+                            <div class="os-details">
+                                <h3>OS Nº ${String(ordem.numero).padStart(3, '0')} - ${ordem.cliente.nome}</h3>
+                                <p class="os-meta">📅 Data: ${ordem.data} | 💰 Total: R$ ${formatarMoeda(ordem.totais.total)}</p>
+                                <p class="os-meta">📱 ${ordem.cliente.telefone} | 📧 ${ordem.cliente.email}</p>
+                                <p class="os-meta"><strong>Status:</strong> <span style="color: ${ordem.status === 'Pago' ? '#27ae60' : '#e67e22'}">${ordem.status}</span></p>
+                            </div>
+                            <div class="os-actions">
+                                <button class="btn btn-primary" onclick="visualizarOS(${ordem.numero})">👁️ Ver</button>
+                                <button class="btn btn-secondary print-btn" onclick="imprimirOSLista(${ordem.numero})">🖨️ Imprimir</button>
+                                <button class="btn btn-danger" onclick="excluirOS(${ordem.numero})">🗑️ Excluir</button>
+                            </div>
+                        `;
+                        listaDiv.appendChild(osDiv);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Erro ao carregar ordens:', error);
+                });
+        }
+
+        function buscarOS() {
+            const busca = document.getElementById('buscaOS').value.toLowerCase();
+            const filtroStatus = document.getElementById('filtroStatus').value;
+            
+            const ordensFiltradas = ordens.filter(os => {
+                const matchBusca = busca === '' || 
+                    os.numero.toString().includes(busca) ||
+                    os.cliente.nome.toLowerCase().includes(busca) ||
+                    os.data.includes(busca);
+                
+                const matchStatus = filtroStatus === '' || os.status === filtroStatus;
+                
+                return matchBusca && matchStatus;
+            });
+
+            const listaDiv = document.getElementById('listaOrdens');
+            listaDiv.innerHTML = '';
+
+            if (ordensFiltradas.length === 0) {
+                listaDiv.innerHTML = '<p style="text-align: center; color: #7f8c8d;">Nenhuma ordem encontrada.</p>';
+                return;
+            }
+
+            ordensFiltradas.forEach((ordem) => {
+                const osDiv = document.createElement('div');
+                osDiv.className = 'os-item';
+                osDiv.innerHTML = `
+                    <div class="os-details">
+                        <h3>OS Nº ${String(ordem.numero).padStart(3, '0')} - ${ordem.cliente.nome}</h3>
+                        <p class="os-meta">📅 Data: ${ordem.data} | 💰 Total: R$ ${formatarMoeda(ordem.totais.total)}</p>
+                        <p class="os-meta">📱 ${ordem.cliente.telefone} | 📧 ${ordem.cliente.email}</p>
+                        <p class="os-meta"><strong>Status:</strong> <span style="color: ${ordem.status === 'Pago' ? '#27ae60' : '#e67e22'}">${ordem.status}</span></p>
+                    </div>
+                    <div class="os-actions">
+                        <button class="btn btn-primary" onclick="visualizarOS(${ordem.numero})">👁️ Ver</button>
+                        <button class="btn btn-secondary print-btn" onclick="imprimirOSLista(${ordem.numero})">🖨️ Imprimir</button>
+                        <button class="btn btn-danger" onclick="excluirOS(${ordem.numero})">🗑️ Excluir</button>
+                    </div>
+                `;
+                listaDiv.appendChild(osDiv);
+            });
+        }
+
+        function visualizarOS(numero) {
+            const ordem = ordens.find(o => o.numero === numero);
+            if (!ordem) {
+                alert('❌ Ordem de serviço não encontrada!');
+                return;
+            }
+
+            // Preencher formulário com dados da OS
+            document.getElementById('numeroOS').textContent = String(ordem.numero).padStart(3, '0');
+            document.getElementById('dataAtual').textContent = ordem.data;
+            
+            // Cliente
+            document.getElementById('clienteBusca').value = ordem.cliente.nome;
+            document.getElementById('clienteNome').textContent = ordem.cliente.nome;
+            document.getElementById('clienteCPF').textContent = ordem.cliente.cpf;
+            document.getElementById('clienteEndereco').textContent = ordem.cliente.endereco;
+            document.getElementById('clienteTelefone').textContent = ordem.cliente.telefone;
+            document.getElementById('clienteEmail').textContent = ordem.cliente.email;
+            document.getElementById('clientDetails').classList.add('show');
+            
+            // Equipamento
+            document.getElementById('equipamentoNome').value = ordem.equipamento.nome;
+            document.getElementById('equipamentoMarca').value = ordem.equipamento.marca;
+            document.getElementById('equipamentoModelo').value = ordem.equipamento.modelo;
+            document.getElementById('equipamentoSerie').value = ordem.equipamento.serie;
+            document.getElementById('defeitos').value = ordem.equipamento.defeitos;
+            document.getElementById('solucao').value = ordem.equipamento.solucao;
+            
+            // Serviços
+            const tbodyServicos = document.querySelector('#tabelaServicos tbody');
+            tbodyServicos.innerHTML = '';
+            ordem.servicos.forEach((servico, index) => {
+                const linha = document.createElement('tr');
+                linha.className = 'linha-servico';
+                linha.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><input type="text" class="table-input servico-nome" value="${servico.nome}"></td>
+                    <td><input type="number" class="table-input servico-qtd" value="${servico.quantidade}" min="1" style="width: 60px;"></td>
+                    <td><input type="text" class="table-input servico-valor valor-unitario" value="${formatarMoeda(servico.valorUnitario)}" style="width: 100px;"></td>
+                    <td class="subtotal-servico">R$ ${formatarMoeda(servico.subtotal)}</td>
+                    <td><button class="btn btn-danger remover-linha" onclick="removerLinha(this)" style="padding: 5px 10px; font-size: 12px;">🗑️</button></td>
+                `;
+                tbodyServicos.appendChild(linha);
+            });
+            
+            // Produtos
+            const tbodyProdutos = document.querySelector('#tabelaProdutos tbody');
+            tbodyProdutos.innerHTML = '';
+            ordem.produtos.forEach((produto, index) => {
+                const linha = document.createElement('tr');
+                linha.className = 'linha-produto';
+                linha.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><input type="text" class="table-input produto-nome" value="${produto.nome}"></td>
+                    <td><input type="text" class="table-input produto-und" value="${produto.unidade}" style="width: 60px;"></td>
+                    <td><input type="number" class="table-input produto-qtd" value="${produto.quantidade}" min="1" style="width: 60px;"></td>
+                    <td><input type="text" class="table-input produto-valor valor-unitario" value="${formatarMoeda(produto.valorUnitario)}" style="width: 100px;"></td>
+                    <td class="subtotal-produto">R$ ${formatarMoeda(produto.subtotal)}</td>
+                    <td><button class="btn btn-danger remover-linha" onclick="removerLinha(this)" style="padding: 5px 10px; font-size: 12px;">🗑️</button></td>
+                `;
+                tbodyProdutos.appendChild(linha);
+            });
+            
+            // Pagamento
+            document.getElementById('vencimento').value = ordem.pagamento.vencimento;
+            document.getElementById('entrada').value = formatarMoeda(ordem.totais.entrada);
+            document.getElementById('formaPagamento').value = ordem.pagamento.forma;
+            document.getElementById('pagamentoObs').value = ordem.pagamento.observacao;
+            
+            // Observações
+            document.getElementById('observacoes').value = ordem.observacoes;
+            
+            // Recalcular totais
+            inicializarFormatacaoMoeda();
+            calcularTotais();
+            
+            // Ir para a tela de nova OS
+            mostrarNovaOS();
+            
+            alert('✅ OS carregada! Você pode visualizar ou editar.');
+        }
+
+        function imprimirOSLista(numero) {
+            visualizarOS(numero);
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
+
+        function excluirOS(numero) {
+            if (!confirm(`⚠️ Tem certeza que deseja excluir a OS Nº ${numero}?`)) return;
+
+            database.ref('usuarios/' + usuarioAtual + '/ordens/' + numero).remove()
+                .then(() => {
+                    alert('✅ OS excluída com sucesso!');
+                    carregarOrdens();
+                })
+                .catch((error) => {
+                    console.error('Erro ao excluir OS:', error);
+                    alert('❌ Erro ao excluir OS.');
+                });
+        }
+
+        function novaOS() {
+            mostrarNovaOS();
+        }
+
+        function imprimirOS() {
+            window.print();
+        }
+
+        // ===== EVENTOS DE QUANTIDADE =====
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('servico-qtd') || e.target.classList.contains('produto-qtd')) {
+                calcularTotais();
+            }
         });
-      } else {
-        alert('Deve haver pelo menos uma linha na tabela!');
-      }
-    }
 
-    // Salvar OS
-    function salvarOS() {
-      alert('Funcionalidade de salvar OS será implementada com backend!');
-    }
-
-    // Nova OS
-    function novaOS() {
-      if (confirm('Deseja criar uma nova OS? Os dados não salvos serão perdidos.')) {
-        location.reload();
-      }
-    }
-
-    // Calcular totais (exemplo básico)
-    document.addEventListener('input', (e) => {
-      if (e.target.classList.contains('table-input')) {
-        // Aqui você pode adicionar lógica para calcular subtotais automaticamente
-        console.log('Valor alterado, recalcular totais...');
-      }
-    });
-  </script>
+        // ===== INICIALIZAÇÃO =====
+        window.addEventListener('DOMContentLoaded', verificarLogin);
+    </script>
 </body>
 </html>
-
