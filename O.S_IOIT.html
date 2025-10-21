@@ -1326,13 +1326,110 @@
       }
     }
 
-    // Calcular totais (exemplo básico)
-    document.addEventListener('input', (e) => {
-      if (e.target.classList.contains('table-input')) {
-        // Aqui você pode adicionar lógica para calcular subtotais automaticamente
-        console.log('Valor alterado, recalcular totais...');
-      }
+    <script>
+  // Atualiza data de impressão
+  window.addEventListener('beforeprint', () => {
+    document.getElementById('printDate').textContent = 
+      new Date().toLocaleString('pt-BR');
+  });
+
+  // Função para formatar valores em reais
+  function formatarValor(valor) {
+    return valor.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
     });
-  </script>
-</body>
-</html>
+  }
+
+  // Função para converter string "R$ 123,45" para número 123.45
+  function parseValor(str) {
+    if (!str) return 0;
+    return parseFloat(str.replace(/[^\d,.-]/g, '').replace(',', '.')) || 0;
+  }
+
+  // Atualiza os subtotais e totais
+  function atualizarTotais() {
+    let totalServicos = 0;
+    let totalProdutos = 0;
+
+    // SERVIÇOS
+    document.querySelectorAll('#tabelaServicos tbody tr').forEach(row => {
+      const qtd = parseFloat(row.cells[2].querySelector('input').value) || 0;
+      const unitario = parseValor(row.cells[3].querySelector('input').value);
+      const subtotal = qtd * unitario;
+      row.cells[4].textContent = formatarValor(subtotal);
+      totalServicos += subtotal;
+    });
+
+    // PRODUTOS
+    document.querySelectorAll('#tabelaProdutos tbody tr').forEach(row => {
+      const qtd = parseFloat(row.cells[2].querySelector('input').value) || 0;
+      const unitario = parseValor(row.cells[4].querySelector('input').value);
+      const subtotal = qtd * unitario;
+      row.cells[5].textContent = formatarValor(subtotal);
+      totalProdutos += subtotal;
+    });
+
+    // Atualizais
+    document.getElementById('subtotalServicos').textContent = formatarValor(totalServicos);
+    document.getElementById('subtotalProdutos').textContent = formatarValor(totalProdutos);
+    document.getElementById('totalGeral').textContent = formatarValor(totalServicos + totalProdutos);
+  }
+
+  // Recalcula totais sempre que houver input nos campos relevantes
+  document.addEventListener('input', (e) => {
+    if (e.target.closest('#tabelaServicos') || e.target.closest('#tabelaProdutos')) {
+      atualizarTotais();
+    }
+  });
+
+  // Também recalcula ao adicionar linhas
+  function adicionarServico() {
+    const tbody = document.getElementById('servicosBody');
+    const novaLinha = tbody.rows[0].cloneNode(true);
+    const numeroItem = tbody.rows.length + 1;
+
+    novaLinha.cells[0].textContent = numeroItem;
+    novaLinha.querySelectorAll('input').forEach(input => input.value = input.type === 'number' ? '1' : '');
+    novaLinha.cells[4].textContent = 'R$ 0,00';
+
+    tbody.appendChild(novaLinha);
+    atualizarTotais();
+  }
+
+  function adicionarProduto() {
+    const tbody = document.getElementById('produtosBody');
+    const novaLinha = tbody.rows[0].cloneNode(true);
+    const numeroItem = tbody.rows.length + 1;
+
+    novaLinha.cells[0].textContent = numeroItem;
+    novaLinha.querySelectorAll('input').forEach(input => {
+      if (input.value === 'UN') return;
+      input.value = input.type === 'number' ? '1' : '';
+    });
+    novaLinha.cells[5].textContent = 'R$ 0,00';
+
+    tbody.appendChild(novaLinha);
+    atualizarTotais();
+  }
+
+  function removerLinha(btn) {
+    const row = btn.closest('tr');
+    const tbody = row.parentElement;
+
+    if (tbody.rows.length > 1)      row.remove();
+      Array.from(tbody.rows).forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+      });
+      atualizarTotais();
+    } else {
+      alert('Deve haver menos uma linha na tabela!');
+    }
+  }
+
+  // Atualiza totais ao carregar a página
+  window.addEventListener('DOMContentLoaded', () => {
+    atualizarTotais();
+  });
+</script>
+
