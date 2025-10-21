@@ -18,82 +18,6 @@
             line-height: 1.4;
         }
 
-        /* TELA DE LOGIN */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .login-box h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2em;
-        }
-
-        .login-box .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .login-box label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .login-box input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 14px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .login-box button:hover {
-            background: #5a67d8;
-        }
-
-        .error-message {
-            background: #f44336;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
         /* CONTAINER PRINCIPAL */
         .container {
             max-width: 1200px;
@@ -102,11 +26,6 @@
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             overflow: hidden;
-            display: none;
-        }
-
-        .container.show {
-            display: block;
         }
 
         .header {
@@ -147,15 +66,6 @@
 
         .nav-btn:hover, .nav-btn.active {
             background: #5a67d8;
-        }
-
-        .nav-btn-logout {
-            background: #e74c3c;
-            margin-left: auto;
-        }
-
-        .nav-btn-logout:hover {
-            background: #c0392b;
         }
 
         .content-area {
@@ -474,7 +384,7 @@
         }
 
         @media print {
-            .nav-menu, .btn, .nav-btn-logout {
+            .nav-menu, .btn {
                 display: none !important;
             }
             
@@ -508,39 +418,17 @@
     </style>
 </head>
 <body>
-    <!-- TELA DE LOGIN -->
-    <div class="login-container" id="loginContainer">
-        <div class="login-box">
-            <h1>🔧 IOIT - Sistema de OS</h1>
-            <div class="error-message" id="errorMessage">
-                Usuário ou senha incorretos!
-            </div>
-            <form id="loginForm" onsubmit="fazerLogin(event)">
-                <div class="input-group">
-                    <label for="username">👤 Usuário:</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="input-group">
-                    <label for="password">🔑 Senha:</label>
-                    <input type="password" id="password" required>
-                </div>
-                <button type="submit">Entrar no Sistema</button>
-            </form>
-        </div>
-    </div>
-
     <!-- CONTAINER PRINCIPAL -->
     <div class="container" id="mainContainer">
         <div class="header">
             <h1>🔧 IOIT - Ordem de Serviço</h1>
-            <div class="user-info" id="userInfo">👤 Carregando...</div>
+            <div class="user-info">👤 Sistema de Gestão</div>
         </div>
 
         <div class="nav-menu">
             <button class="nav-btn active" onclick="mostrarNovaOS()">➕ Nova OS</button>
             <button class="nav-btn" onclick="mostrarClientes()">👥 Clientes</button>
             <button class="nav-btn" onclick="mostrarListaOS()">📋 Listar OS</button>
-            <button class="nav-btn-logout" onclick="fazerLogout()">🚪 Sair</button>
         </div>
 
         <div class="content-area">
@@ -820,88 +708,27 @@
     
     <script>
         // ===== CONFIGURAÇÃO DO FIREBASE =====
-        // SUBSTITUA PELAS SUAS CONFIGURAÇÕES DO PROJETO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCnBBc_2-RI2H07TEd8H8u6OZcWRZ5n5uY",
             authDomain: "os-ioit.firebaseapp.com",
+            databaseURL: "https://os-ioit-default-rtdb.firebaseio.com",
             projectId: "os-ioit",
             storageBucket: "os-ioit.firebasestorage.app",
             messagingSenderId: "508837030553",
             appId: "1:508837030553:web:52a80e098b44b76f05e608",
             measurementId: "G-2QGTD33DPQ"
-};
+        };
 
         // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
         // ===== VARIÁVEIS GLOBAIS =====
-        let usuarioAtual = null;
+        let usuarioAtual = 'fernando'; // Login automático sem tela
         let clientes = [];
         let ordens = [];
         let proximoNumeroOS = 1;
         let osAtual = null;
-        let contadorItem = 1;
-
-        // ===== SISTEMA DE LOGIN =====
-        const usuarios = {
-            'admin': 'admin123',
-            'fernando': 'senha123',
-            'tecnico': 'tecnico2024'
-        };
-
-        function fazerLogin(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (usuarios[username] && usuarios[username] === password) {
-                usuarioAtual = username;
-                sessionStorage.setItem('usuarioLogado', username);
-                document.getElementById('userInfo').textContent = `Usuário: ${username}`;
-                document.getElementById('loginContainer').
-        function fazerLogin(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (usuarios[username] && usuarios[username] === password) {
-                usuarioAtual = username;
-                sessionStorage.setItem('usuarioLogado', username);
-                document.getElementById('userInfo').textContent = `👤 Usuário: ${username}`;
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('mainContainer').classList.add('show');
-                inicializarSistema();
-            } else {
-                document.getElementById('errorMessage').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('errorMessage').style.display = 'none';
-                }, 3000);
-            }
-        }
-
-        function fazerLogout() {
-            if (confirm('Tem certeza que deseja sair?')) {
-                sessionStorage.removeItem('usuarioLogado');
-                location.reload();
-            }
-        }
-
-        function verificarLogin() {
-            const usuarioLogado = sessionStorage.getItem('usuarioLogado');
-            
-            if (usuarioLogado) {
-                usuarioAtual = usuarioLogado;
-                document.getElementById('userInfo').textContent = `👤 Usuário: ${usuarioLogado}`;
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('mainContainer').classList.add('show');
-                inicializarSistema();
-            } else {
-                document.getElementById('loginContainer').style.display = 'flex';
-            }
-        }
 
         // ===== INICIALIZAÇÃO DO SISTEMA =====
         function inicializarSistema() {
@@ -1015,12 +842,10 @@
                         const cliente = childSnapshot.val();
                         clientes.push(cliente);
 
-                        // Adicionar ao datalist para autocomplete
                         const option = document.createElement('option');
                         option.value = cliente.nome;
                         datalist.appendChild(option);
 
-                        // Adicionar à lista visual
                         const clienteDiv = document.createElement('div');
                         clienteDiv.className = 'client-item';
                         clienteDiv.innerHTML = `
@@ -1127,14 +952,12 @@
         }
 
         function salvarOSCompleta() {
-            // Validar cliente
             const clienteBusca = document.getElementById('clienteBusca').value.trim();
             if (!clienteBusca) {
                 alert('⚠️ Selecione um cliente antes de salvar a OS!');
                 return;
             }
 
-            // Coletar dados da OS
             const os = {
                 numero: proximoNumeroOS,
                 data: document.getElementById('dataAtual').textContent,
@@ -1171,10 +994,8 @@
                 status: 'Pendente'
             };
 
-            // Salvar no Firebase
             database.ref('usuarios/' + usuarioAtual + '/ordens/' + proximoNumeroOS).set(os)
                 .then(() => {
-                    // Atualizar próximo número
                     return database.ref('usuarios/' + usuarioAtual + '/configuracoes/proximaOS').set(proximoNumeroOS + 1);
                 })
                 .then(() => {
@@ -1252,7 +1073,6 @@
             document.getElementById('pagamentoObs').value = '';
             document.getElementById('observacoes').value = '';
             
-            // Limpar tabelas
             document.querySelector('#tabelaServicos tbody').innerHTML = `
                 <tr class="linha-servico">
                     <td>1</td>
@@ -1290,7 +1110,6 @@
             let totalServicos = 0;
             let totalProdutos = 0;
 
-            // Calcular serviços
             const linhasServicos = document.querySelectorAll('#tabelaServicos tbody tr');
             linhasServicos.forEach((linha) => {
                 const qtd = parseFloat(linha.querySelector('.servico-qtd')?.value) || 0;
@@ -1305,7 +1124,6 @@
                 totalServicos += subtotal;
             });
 
-            // Calcular produtos
             const linhasProdutos = document.querySelectorAll('#tabelaProdutos tbody tr');
             linhasProdutos.forEach((linha) => {
                 const qtd = parseFloat(linha.querySelector('.produto-qtd')?.value) || 0;
@@ -1320,7 +1138,6 @@
                 totalProdutos += subtotal;
             });
 
-            // Atualizar totais
             document.getElementById('totalServicos').textContent = `R$ ${totalServicos.toFixed(2).replace('.', ',')}`;
             document.getElementById('totalProdutos').textContent = `R$ ${totalProdutos.toFixed(2).replace('.', ',')}`;
             document.getElementById('displayTotalServicos').textContent = totalServicos.toFixed(2).replace('.', ',');
@@ -1373,7 +1190,6 @@
             if (tbody.querySelectorAll('tr').length > 1) {
                 linha.remove();
                 
-                // Renumerar itens
                 tbody.querySelectorAll('tr').forEach((tr, index) => {
                     tr.querySelector('td:first-child').textContent = index + 1;
                 });
@@ -1402,7 +1218,6 @@
                         ordens.push(ordem);
                     });
 
-                    // Ordenar por número decrescente
                     ordens.sort((a, b) => b.numero - a.numero);
 
                     ordens.forEach((ordem) => {
@@ -1503,7 +1318,7 @@
         }
 
         // ===== INICIALIZAÇÃO =====
-        window.addEventListener('DOMContentLoaded', verificarLogin);
+        window.addEventListener('DOMContentLoaded', inicializarSistema);
     </script>
 </body>
 </html>
